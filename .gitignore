@@ -1,0 +1,25 @@
+.DS_Store
+node_modules
+dist
+build
+.turbo
+.sst
+.serverless
+.env*
+
+# Swift / Xcode
+.build/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.swiftpm/
+.swiftpm/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+
+
+

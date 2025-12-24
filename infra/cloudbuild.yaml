@@ -1,0 +1,33 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/amber-app:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/amber-app:latest'
+      - '-f'
+      - 'infra/Dockerfile'
+      - '.'
+  
+  # Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/amber-app:$SHORT_SHA'
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/amber-app:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/amber-app:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/amber-app:latest'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+
