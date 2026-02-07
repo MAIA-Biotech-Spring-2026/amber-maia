@@ -16,7 +16,14 @@ public class AuthManager: ObservableObject {
 
     private init() {
         // Configuration with environment-aware defaults
-        self.privyAppId = ProcessInfo.processInfo.environment["PRIVY_APP_ID"] ?? "cmisgt8wr00enjj0dkasj2xsz"
+        guard let privyAppId = ProcessInfo.processInfo.environment["PRIVY_APP_ID"] else {
+            self.privyAppId = ""
+            self.backendURL = nil
+            self.configError = "PRIVY_APP_ID not configured"
+            print("⚠️ AuthManager: PRIVY_APP_ID environment variable is required")
+            return
+        }
+        self.privyAppId = privyAppId
 
         let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
         if let url = URL(string: backendURLString) {
@@ -25,7 +32,7 @@ public class AuthManager: ObservableObject {
         } else {
             self.backendURL = nil
             self.configError = "Invalid BACKEND_URL configuration: \(backendURLString)"
-            print("⚠️ AuthManager: \(self.configError!)")
+            print("⚠️ AuthManager: \(self.configError ?? "Unknown configuration error")")
         }
 
         checkStoredAuth()
