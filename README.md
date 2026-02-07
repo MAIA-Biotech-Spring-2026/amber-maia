@@ -113,9 +113,42 @@ pnpm run dev
 
 See [QUICK_START.md](QUICK_START.md) for detailed instructions.
 
+## Next Steps
+
+**Current Status:** v2.0.0 - Production Ready (Phase 1 Complete)
+**Next Priority:** Phase 2 - Authentication & User Management
+
+### Immediate Tasks
+- [ ] Implement Privy OAuth web login (ASWebAuthenticationSession)
+- [ ] Get organizationId from user profile (not environment variable)
+- [ ] Connect to backend API for Connections data
+- [ ] Connect to backend API for Insights data
+
+### Comprehensive Roadmap
+See **[ROADMAP.md](../ROADMAP.md)** in the main workspace for:
+- Complete Phase 2-6 planning
+- All 7 intentional TODOs with locations and context
+- Success metrics and timelines
+- Production deployment strategy
+
+### Quick Commands
+```bash
+# Development
+open AmberApp.xcodeproj                # Open in Xcode
+# Press Cmd+R to build and run
+
+# From command line
+xcodebuild -project AmberApp/AmberApp.xcodeproj -scheme AmberApp \
+  -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+
+# Or use the automated launcher
+cd ..                                  # Go to main workspace
+./start-all.sh                         # Launches both Togari + Amber
+```
+
 ## License
 
-This project is based on the original Amber platform (Proprietary).  
+This project is based on the original Amber platform (Proprietary).
 **Academic Use Only** - For USC MAIA Biotech coursework.
 
 ## Acknowledgments
