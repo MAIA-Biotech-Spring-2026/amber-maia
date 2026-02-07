@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import AmberKit
 
 struct AddContactView: View {
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var authManager = AuthManager.shared
     @State private var name = ""
     @State private var company = ""
     @State private var linkedinURL = ""
@@ -63,6 +65,13 @@ struct AddContactView: View {
         isSubmitting = true
         defer { isSubmitting = false }
 
+        // Validate LinkedIn URL format
+        if !isValidLinkedInURL(linkedinURL) {
+            errorMessage = "Please enter a valid LinkedIn profile URL (e.g., linkedin.com/in/username)"
+            showError = true
+            return
+        }
+
         let backendURL = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
         guard let url = URL(string: "\(backendURL)/api/v1/amber/submit") else {
             errorMessage = "Invalid backend URL"
@@ -76,14 +85,19 @@ struct AddContactView: View {
             return
         }
 
+        // Get user identity from auth manager
+        let submittedBy = authManager.userId ?? "anonymous"
+        // TODO: Get organizationId from user profile when implemented
+        let organizationId = ProcessInfo.processInfo.environment["ORGANIZATION_ID"] ?? "default_org"
+
         let submission: [String: Any] = [
             "linkedinUrl": linkedinURL,
             "submittedName": name,
             "submittedCompany": company.isEmpty ? nil : company,
             "notes": notes.isEmpty ? nil : notes,
-            "submittedBy": "ios_user", // TODO: Get from authenticated user
+            "submittedBy": submittedBy,
             "sourceChannel": "ios_app",
-            "organizationId": "dev_org" // TODO: Get from user profile
+            "organizationId": organizationId
         ]
 
         do {
@@ -110,5 +124,26 @@ struct AddContactView: View {
             }
             showError = true
         }
+    }
+
+    private func isValidLinkedInURL(_ urlString: String) -> Bool {
+        // Check if URL is valid
+        guard let url = URL(string: urlString.lowercased()) else {
+            return false
+        }
+
+        // Check if it's a linkedin.com domain
+        guard let host = url.host else {
+            return false
+        }
+
+        // Accept linkedin.com or any subdomain
+        if !host.hasSuffix("linkedin.com") {
+            return false
+        }
+
+        // Check if it contains /in/ or /company/ path
+        let path = url.path
+        return path.contains("/in/") || path.contains("/company/")
     }
 }

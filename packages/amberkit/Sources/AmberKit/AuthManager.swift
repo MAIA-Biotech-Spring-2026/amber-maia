@@ -40,31 +40,45 @@ public class AuthManager: ObservableObject {
     
     /// Check for stored authentication
     private func checkStoredAuth() {
-        if let token = UserDefaults.standard.string(forKey: "privy_access_token"),
-           let userId = UserDefaults.standard.string(forKey: "privy_user_id") {
+        do {
+            let token = try KeychainManager.get(key: "privy_access_token")
+            let userId = try KeychainManager.get(key: "privy_user_id")
+
             self.accessToken = token
             self.userId = userId
             self.isAuthenticated = true
+
             // Verify token is still valid
             Task {
                 await verifyToken()
             }
+        } catch {
+            // No stored auth or keychain error - user needs to log in
+            self.isAuthenticated = false
         }
     }
     
     /// Store authentication
     private func storeAuth(token: String, userId: String) {
-        UserDefaults.standard.set(token, forKey: "privy_access_token")
-        UserDefaults.standard.set(userId, forKey: "privy_user_id")
-        self.accessToken = token
-        self.userId = userId
-        self.isAuthenticated = true
+        do {
+            try KeychainManager.save(key: "privy_access_token", value: token)
+            try KeychainManager.save(key: "privy_user_id", value: userId)
+            self.accessToken = token
+            self.userId = userId
+            self.isAuthenticated = true
+        } catch {
+            print("⚠️ AuthManager: Failed to store credentials in keychain: \(error)")
+        }
     }
-    
+
     /// Clear stored authentication
     private func clearAuth() {
-        UserDefaults.standard.removeObject(forKey: "privy_access_token")
-        UserDefaults.standard.removeObject(forKey: "privy_user_id")
+        do {
+            try KeychainManager.delete(key: "privy_access_token")
+            try KeychainManager.delete(key: "privy_user_id")
+        } catch {
+            print("⚠️ AuthManager: Failed to clear keychain: \(error)")
+        }
         self.accessToken = nil
         self.userId = nil
         self.isAuthenticated = false
