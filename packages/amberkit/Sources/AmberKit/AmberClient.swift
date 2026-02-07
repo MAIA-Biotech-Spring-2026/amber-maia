@@ -245,11 +245,28 @@ public final class SSEStream: NSObject, URLSessionDataDelegate {
     public typealias Handler = (String, Data?) -> Void
     private var onEvent: Handler?
     private var buffer = Data()
+    private var session: URLSession?
+    private var task: URLSessionDataTask?
 
     public func start(url: URL, onEvent: @escaping Handler) {
         self.onEvent = onEvent
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-        session.dataTask(with: url).resume()
+        self.session = session
+        let task = session.dataTask(with: url)
+        self.task = task
+        task.resume()
+    }
+
+    public func stop() {
+        task?.cancel()
+        session?.invalidateAndCancel()
+        task = nil
+        session = nil
+        onEvent = nil
+    }
+
+    deinit {
+        stop()
     }
 
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {

@@ -83,7 +83,7 @@ struct FilterPlaceholderView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 Image(systemName: "line.3.horizontal.decrease.circle.fill")
                     .font(.system(size: 60))

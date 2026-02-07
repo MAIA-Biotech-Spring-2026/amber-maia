@@ -127,7 +127,7 @@ struct SettingsPlaceholderView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 60))
@@ -162,7 +162,7 @@ struct EditProfilePlaceholderView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 Image(systemName: "person.crop.circle.badge.plus")
                     .font(.system(size: 60))
