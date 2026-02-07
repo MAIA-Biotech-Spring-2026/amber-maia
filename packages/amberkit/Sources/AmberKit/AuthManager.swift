@@ -9,19 +9,24 @@ public class AuthManager: ObservableObject {
     @Published public var isAuthenticated = false
     @Published public var accessToken: String?
     @Published public var userId: String?
+    @Published public var configError: String?
 
     private let privyAppId: String
-    private let backendURL: URL
+    private let backendURL: URL?
 
     private init() {
         // Configuration with environment-aware defaults
         self.privyAppId = ProcessInfo.processInfo.environment["PRIVY_APP_ID"] ?? "cmisgt8wr00enjj0dkasj2xsz"
 
         let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
-        guard let url = URL(string: backendURLString) else {
-            fatalError("Invalid BACKEND_URL configuration: \(backendURLString)")
+        if let url = URL(string: backendURLString) {
+            self.backendURL = url
+            self.configError = nil
+        } else {
+            self.backendURL = nil
+            self.configError = "Invalid BACKEND_URL configuration: \(backendURLString)"
+            print("⚠️ AuthManager: \(self.configError!)")
         }
-        self.backendURL = url
 
         checkStoredAuth()
     }
@@ -64,21 +69,26 @@ public class AuthManager: ObservableObject {
             clearAuth()
             return
         }
-        
+
+        guard let backendURL = backendURL else {
+            clearAuth()
+            return
+        }
+
         do {
             var request = URLRequest(url: backendURL.appendingPathComponent("auth/verify"))
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = try JSONEncoder().encode(["accessToken": token])
-            
+
             let (data, response) = try await URLSession.shared.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 clearAuth()
                 return
             }
-            
+
             let result = try JSONDecoder().decode(AuthVerifyResponse.self, from: data)
             storeAuth(token: token, userId: result.privyUserId)
         } catch {
@@ -97,18 +107,22 @@ public class AuthManager: ObservableObject {
     
     /// Login with access token (for testing/manual entry)
     public func loginWithToken(_ token: String) async throws {
+        guard let backendURL = backendURL else {
+            throw AuthError.notConfigured
+        }
+
         var request = URLRequest(url: backendURL.appendingPathComponent("auth/verify"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(["accessToken": token])
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw AuthError.invalidToken
         }
-        
+
         let result = try JSONDecoder().decode(AuthVerifyResponse.self, from: data)
         storeAuth(token: token, userId: result.privyUserId)
     }

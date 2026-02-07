@@ -18,7 +18,7 @@ struct AddContactView: View {
     @State private var errorMessage = ""
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section("Contact Information") {
                     TextField("Name", text: $name)
