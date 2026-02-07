@@ -5,9 +5,22 @@ public struct AmberClient {
     private let session: URLSession
     private var authToken: String?
 
-    public init(baseURL: URL, session: URLSession = .shared, authToken: String? = nil) {
+    /// Default URLSession configuration with proper timeouts and security
+    private static var defaultSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        // SECURITY: Set reasonable timeouts to prevent indefinite hangs
+        config.timeoutIntervalForRequest = 30.0  // 30 seconds per request
+        config.timeoutIntervalForResource = 60.0 // 60 seconds total
+        config.waitsForConnectivity = true
+        config.httpMaximumConnectionsPerHost = 4
+        // SECURITY: Only allow HTTPS in production (commented for now, needs build config)
+        // config.tlsMinimumSupportedProtocolVersion = .TLSv12
+        return URLSession(configuration: config)
+    }()
+
+    public init(baseURL: URL, session: URLSession? = nil, authToken: String? = nil) {
         self.baseURL = baseURL
-        self.session = session
+        self.session = session ?? Self.defaultSession
         self.authToken = authToken
     }
     
