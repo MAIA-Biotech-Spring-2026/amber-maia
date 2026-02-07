@@ -19,20 +19,46 @@ struct AddContactView: View {
     @State private var showError = false
     @State private var errorMessage = ""
 
+    // SECURITY: Input length limits to prevent DOS and database issues
+    private let maxNameLength = 200
+    private let maxCompanyLength = 200
+    private let maxLinkedInLength = 500
+    private let maxNotesLength = 5000
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Contact Information") {
                     TextField("Name", text: $name)
+                        .onChange(of: name) { _, newValue in
+                            if newValue.count > maxNameLength {
+                                name = String(newValue.prefix(maxNameLength))
+                            }
+                        }
                     TextField("Company", text: $company)
+                        .onChange(of: company) { _, newValue in
+                            if newValue.count > maxCompanyLength {
+                                company = String(newValue.prefix(maxCompanyLength))
+                            }
+                        }
                     TextField("LinkedIn URL", text: $linkedinURL)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
+                        .onChange(of: linkedinURL) { _, newValue in
+                            if newValue.count > maxLinkedInLength {
+                                linkedinURL = String(newValue.prefix(maxLinkedInLength))
+                            }
+                        }
                 }
 
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(height: 100)
+                        .onChange(of: notes) { _, newValue in
+                            if newValue.count > maxNotesLength {
+                                notes = String(newValue.prefix(maxNotesLength))
+                            }
+                        }
                 }
             }
             .navigationTitle("Add Contact")

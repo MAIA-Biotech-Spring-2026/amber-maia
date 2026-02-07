@@ -20,19 +20,27 @@ public class AuthManager: ObservableObject {
             self.privyAppId = ""
             self.backendURL = nil
             self.configError = "PRIVY_APP_ID not configured"
-            print("⚠️ AuthManager: PRIVY_APP_ID environment variable is required")
+            // SECURITY: Don't print sensitive config errors to console
+            // They are available via configError property for UI display
             return
         }
         self.privyAppId = privyAppId
 
-        let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "https://127.0.0.1:3001"
+        // SECURITY: No default URL - must be explicitly configured
+        // Localhost URLs don't work on physical iOS devices
+        guard let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] else {
+            self.backendURL = nil
+            self.configError = "BACKEND_URL not configured"
+            return
+        }
+
         if let url = URL(string: backendURLString) {
             self.backendURL = url
             self.configError = nil
         } else {
             self.backendURL = nil
             self.configError = "Invalid BACKEND_URL configuration: \(backendURLString)"
-            print("⚠️ AuthManager: \(self.configError ?? "Unknown configuration error")")
+            // SECURITY: Don't print config errors - available via configError property
         }
 
         checkStoredAuth()
@@ -67,7 +75,9 @@ public class AuthManager: ObservableObject {
             self.userId = userId
             self.isAuthenticated = true
         } catch {
-            print("⚠️ AuthManager: Failed to store credentials in keychain: \(error)")
+            // SECURITY: Don't print keychain errors to console (may contain sensitive info)
+            // Keychain failures will manifest as authentication failures in the UI
+            // Error is silently ignored - user will need to re-authenticate
         }
     }
 
@@ -77,7 +87,8 @@ public class AuthManager: ObservableObject {
             try KeychainManager.delete(key: "privy_access_token")
             try KeychainManager.delete(key: "privy_user_id")
         } catch {
-            print("⚠️ AuthManager: Failed to clear keychain: \(error)")
+            // SECURITY: Don't print keychain errors to console
+            // Silently ignore delete errors - credentials will be overwritten on next auth
         }
         self.accessToken = nil
         self.userId = nil
@@ -99,8 +110,8 @@ public class AuthManager: ObservableObject {
         do {
             var request = URLRequest(url: backendURL.appendingPathComponent("auth/verify"))
             request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try JSONEncoder().encode(["accessToken": token])
+            // SECURITY: Send token in Authorization header, not request body
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
             let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -134,8 +145,8 @@ public class AuthManager: ObservableObject {
 
         var request = URLRequest(url: backendURL.appendingPathComponent("auth/verify"))
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(["accessToken": token])
+        // SECURITY: Send token in Authorization header, not request body
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
