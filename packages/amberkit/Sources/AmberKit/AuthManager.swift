@@ -25,7 +25,7 @@ public class AuthManager: ObservableObject {
         }
         self.privyAppId = privyAppId
 
-        let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
+        let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "https://127.0.0.1:3001"
         if let url = URL(string: backendURLString) {
             self.backendURL = url
             self.configError = nil
@@ -105,7 +105,7 @@ public class AuthManager: ObservableObject {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+                  (200...299).contains(httpResponse.statusCode) else {
                 clearAuth()
                 return
             }
@@ -140,7 +140,7 @@ public class AuthManager: ObservableObject {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+              (200...299).contains(httpResponse.statusCode) else {
             throw AuthError.invalidToken
         }
 
