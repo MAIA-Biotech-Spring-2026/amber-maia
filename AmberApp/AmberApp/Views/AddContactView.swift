@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import AmberKit
 
 struct AddContactView: View {
     @Environment(\.dismiss) private var dismiss
@@ -119,8 +118,8 @@ struct AddContactView: View {
         let submission: [String: Any] = [
             "linkedinUrl": linkedinURL,
             "submittedName": name,
-            "submittedCompany": company.isEmpty ? nil : company,
-            "notes": notes.isEmpty ? nil : notes,
+            "submittedCompany": company.isEmpty ? nil as Any : company as Any,
+            "notes": notes.isEmpty ? nil as Any : notes as Any,
             "submittedBy": submittedBy,
             "sourceChannel": "ios_app",
             "organizationId": organizationId
