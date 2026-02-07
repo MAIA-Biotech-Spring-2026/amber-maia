@@ -79,12 +79,17 @@ public struct AmberClient {
 
     // Insights
     public func listInsights(priority: InsightPriority? = nil, topic: InsightTopic? = nil) async throws -> [InsightCard] {
-        var components = URLComponents(url: baseURL.appendingPathComponent("insights"), resolvingAgainstBaseURL: false)!
+        guard var components = URLComponents(url: baseURL.appendingPathComponent("insights"), resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         var queryItems: [URLQueryItem] = []
         if let p = priority { queryItems.append(URLQueryItem(name: "priority", value: p.rawValue)) }
         if let t = topic { queryItems.append(URLQueryItem(name: "topic", value: t.rawValue)) }
         components.queryItems = queryItems.isEmpty ? nil : queryItems
-        let request = authenticatedRequest(url: components.url!)
+        guard let url = components.url else {
+            throw URLError(.badURL)
+        }
+        let request = authenticatedRequest(url: url)
         let (data, _) = try await session.data(for: request)
         return try JSONDecoder().decode([InsightCard].self, from: data)
     }

@@ -9,11 +9,20 @@ public class AuthManager: ObservableObject {
     @Published public var isAuthenticated = false
     @Published public var accessToken: String?
     @Published public var userId: String?
-    
-    private let privyAppId = "cmisgt8wr00enjj0dkasj2xsz"
-    private let backendURL = URL(string: "http://127.0.0.1:3001")!
-    
+
+    private let privyAppId: String
+    private let backendURL: URL
+
     private init() {
+        // Configuration with environment-aware defaults
+        self.privyAppId = ProcessInfo.processInfo.environment["PRIVY_APP_ID"] ?? "cmisgt8wr00enjj0dkasj2xsz"
+
+        let backendURLString = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
+        guard let url = URL(string: backendURLString) else {
+            fatalError("Invalid BACKEND_URL configuration: \(backendURLString)")
+        }
+        self.backendURL = url
+
         checkStoredAuth()
     }
     
@@ -73,7 +82,7 @@ public class AuthManager: ObservableObject {
             let result = try JSONDecoder().decode(AuthVerifyResponse.self, from: data)
             storeAuth(token: token, userId: result.privyUserId)
         } catch {
-            print("Token verification failed: \(error)")
+            // Token verification failed - clear stored authentication
             clearAuth()
         }
     }
