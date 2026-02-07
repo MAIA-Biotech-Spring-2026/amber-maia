@@ -70,6 +70,12 @@ struct AddContactView: View {
             return
         }
 
+        guard let apiKey = ProcessInfo.processInfo.environment["AMBER_API_KEY"], !apiKey.isEmpty else {
+            errorMessage = "API key not configured"
+            showError = true
+            return
+        }
+
         let submission: [String: Any] = [
             "linkedinUrl": linkedinURL,
             "submittedName": name,
@@ -80,19 +86,15 @@ struct AddContactView: View {
             "organizationId": "dev_org" // TODO: Get from user profile
         ]
 
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: submission.compactMapValues { $0 }) else {
-            errorMessage = "Failed to encode submission"
-            showError = true
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue(ProcessInfo.processInfo.environment["AMBER_API_KEY"] ?? "", forHTTPHeaderField: "x-api-key")
-        request.httpBody = jsonData
-
         do {
+            let jsonData = try JSONSerialization.data(withJSONObject: submission.compactMapValues { $0 })
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+            request.httpBody = jsonData
+
             let (_, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 errorMessage = "Failed to submit contact"
@@ -100,8 +102,12 @@ struct AddContactView: View {
                 return
             }
             dismiss()
-        } catch {
-            errorMessage = "Network error: \(error.localizedDescription)"
+        } catch let error as NSError {
+            if error.domain == NSURLErrorDomain {
+                errorMessage = "Network error: \(error.localizedDescription)"
+            } else {
+                errorMessage = "Failed to encode submission: \(error.localizedDescription)"
+            }
             showError = true
         }
     }
