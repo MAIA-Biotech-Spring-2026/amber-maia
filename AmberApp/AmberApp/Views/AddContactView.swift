@@ -115,11 +115,11 @@ struct AddContactView: View {
         // TODO: Get organizationId from user profile when implemented
         let organizationId = ProcessInfo.processInfo.environment["ORGANIZATION_ID"] ?? "default_org"
 
-        let submission: [String: Any] = [
+        let submission: [String: Any?] = [
             "linkedinUrl": linkedinURL,
             "submittedName": name,
-            "submittedCompany": company.isEmpty ? nil as Any : company as Any,
-            "notes": notes.isEmpty ? nil as Any : notes as Any,
+            "submittedCompany": company.isEmpty ? nil : company,
+            "notes": notes.isEmpty ? nil : notes,
             "submittedBy": submittedBy,
             "sourceChannel": "ios_app",
             "organizationId": organizationId
