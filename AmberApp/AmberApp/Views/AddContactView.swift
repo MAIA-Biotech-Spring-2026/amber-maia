@@ -137,8 +137,11 @@ struct AddContactView: View {
             return false
         }
 
-        // Accept linkedin.com or any subdomain
-        if !host.hasSuffix("linkedin.com") {
+        // Accept only linkedin.com or official subdomains (*.linkedin.com)
+        // SECURITY: Must check exact match OR starts with subdomain to prevent bypass
+        // Bad: evillinkedin.com would pass hasSuffix("linkedin.com")
+        // Good: Only linkedin.com or www.linkedin.com, etc.
+        if host != "linkedin.com" && !host.hasSuffix(".linkedin.com") {
             return false
         }
 
