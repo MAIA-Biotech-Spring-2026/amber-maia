@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		7C3F8EB8A2941DBA1CF1F889 /* AmberClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmberClient.swift; sourceTree = "<group>"; };
+		10ED5079506FAB768962CA72 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		42931934A358F402D4344531 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		8DC8A4DF2F1C9E3B00B2E249 /* AmberApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AmberApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 

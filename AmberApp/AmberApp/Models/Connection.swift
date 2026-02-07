@@ -44,7 +44,7 @@ struct Connection: Codable, Identifiable {
     }
 }
 
-enum RelationshipType: String, Codable, CaseIterable {
+public enum RelationshipType: String, Codable, CaseIterable {
     case friend
     case colleague
     case mentor
