@@ -72,7 +72,7 @@ struct AddContactView: View {
             return
         }
 
-        let backendURL = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
+        let backendURL = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "https://127.0.0.1:3001"
         guard let url = URL(string: "\(backendURL)/api/v1/amber/submit") else {
             errorMessage = "Invalid backend URL"
             showError = true

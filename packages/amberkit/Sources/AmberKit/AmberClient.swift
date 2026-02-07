@@ -28,7 +28,7 @@ public struct AmberClient {
     public func health() async throws -> Bool {
         let url = baseURL.appendingPathComponent("health")
         let (data, resp) = try await session.data(from: url)
-        guard let http = resp as? HTTPURLResponse, http.statusCode == 200 else { return false }
+        guard let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode) else { return false }
         return (try? JSONSerialization.jsonObject(with: data)) != nil
     }
 
