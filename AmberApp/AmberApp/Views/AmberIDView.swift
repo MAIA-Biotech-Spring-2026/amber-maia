@@ -10,6 +10,8 @@ import SwiftUI
 struct AmberIDView: View {
     @StateObject private var viewModel = AmberIDViewModel()
     @State private var journalText = ""
+    @State private var showSettings = false
+    @State private var showEditProfile = false
 
     var body: some View {
         NavigationStack {
@@ -97,7 +99,7 @@ struct AmberIDView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        // Settings action
+                        showSettings = true
                     } label: {
                         Image(systemName: "gearshape")
                     }
@@ -105,9 +107,85 @@ struct AmberIDView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // Edit profile
+                        showEditProfile = true
                     } label: {
                         Image(systemName: "pencil")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsPlaceholderView()
+            }
+            .sheet(isPresented: $showEditProfile) {
+                EditProfilePlaceholderView()
+            }
+        }
+    }
+}
+
+struct SettingsPlaceholderView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(.accentColor)
+
+                Text("Settings")
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                Text("Coming Soon")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                Text("Account settings, notifications, privacy controls, and more will be available here.")
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct EditProfilePlaceholderView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Image(systemName: "person.crop.circle.badge.plus")
+                    .font(.system(size: 60))
+                    .foregroundColor(.accentColor)
+
+                Text("Edit Profile")
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                Text("Coming Soon")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                Text("Edit your name, photo, bio, personality traits, and other profile information.")
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            .navigationTitle("Edit Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
             }

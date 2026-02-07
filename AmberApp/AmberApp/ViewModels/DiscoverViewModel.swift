@@ -27,7 +27,10 @@ class DiscoverViewModel: ObservableObject {
     }
 
     func loadInsights() async {
-        // Simulate loading from Supabase
+        // TODO: Replace with actual backend API call when available
+        // For now, reload mock data to simulate network refresh
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s delay
+        loadMockData()
     }
 
     private func loadMockData() {
