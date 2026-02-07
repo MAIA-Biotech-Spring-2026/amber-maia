@@ -10,6 +10,8 @@ import SwiftUI
 struct DiscoverView: View {
     @StateObject private var viewModel = DiscoverViewModel()
     @State private var selectedCategory: HealthDimension? = nil
+    @State private var showSettings = false
+    @State private var showFilter = false
 
     var body: some View {
         NavigationStack {
@@ -50,7 +52,7 @@ struct DiscoverView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        // Settings action
+                        showSettings = true
                     } label: {
                         Image(systemName: "gearshape")
                     }
@@ -58,15 +60,56 @@ struct DiscoverView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // Filter action
+                        showFilter = true
                     } label: {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                     }
                 }
             }
+            .sheet(isPresented: $showSettings) {
+                SettingsPlaceholderView()
+            }
+            .sheet(isPresented: $showFilter) {
+                FilterPlaceholderView()
+            }
         }
         .task {
             await viewModel.loadInsights()
+        }
+    }
+}
+
+struct FilterPlaceholderView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(.accentColor)
+
+                Text("Filter Insights")
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                Text("Coming Soon")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                Text("Filter insights by priority, dimension, read status, and more.")
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            .navigationTitle("Filter")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }

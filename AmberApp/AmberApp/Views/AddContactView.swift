@@ -13,6 +13,9 @@ struct AddContactView: View {
     @State private var company = ""
     @State private var linkedinURL = ""
     @State private var notes = ""
+    @State private var isSubmitting = false
+    @State private var showError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         NavigationView {
@@ -41,13 +44,65 @@ struct AddContactView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // TODO: Integrate with Togari API
-                        // POST /api/v1/amber/submit
-                        dismiss()
+                        Task {
+                            await submitContact()
+                        }
                     }
-                    .disabled(name.isEmpty)
+                    .disabled(name.isEmpty || linkedinURL.isEmpty || isSubmitting)
                 }
             }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func submitContact() async {
+        isSubmitting = true
+        defer { isSubmitting = false }
+
+        let backendURL = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? "http://127.0.0.1:3001"
+        guard let url = URL(string: "\(backendURL)/api/v1/amber/submit") else {
+            errorMessage = "Invalid backend URL"
+            showError = true
+            return
+        }
+
+        let submission: [String: Any] = [
+            "linkedinUrl": linkedinURL,
+            "submittedName": name,
+            "submittedCompany": company.isEmpty ? nil : company,
+            "notes": notes.isEmpty ? nil : notes,
+            "submittedBy": "ios_user", // TODO: Get from authenticated user
+            "sourceChannel": "ios_app",
+            "organizationId": "dev_org" // TODO: Get from user profile
+        ]
+
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: submission.compactMapValues { $0 }) else {
+            errorMessage = "Failed to encode submission"
+            showError = true
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(ProcessInfo.processInfo.environment["AMBER_API_KEY"] ?? "", forHTTPHeaderField: "x-api-key")
+        request.httpBody = jsonData
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                errorMessage = "Failed to submit contact"
+                showError = true
+                return
+            }
+            dismiss()
+        } catch {
+            errorMessage = "Network error: \(error.localizedDescription)"
+            showError = true
         }
     }
 }
