@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
 struct AmberIDView: View {
     @StateObject private var viewModel = AmberIDViewModel()
     @State private var journalText = ""
-    @State private var selectedDigestIndex = 0
 
     var body: some View {
         NavigationStack {
@@ -244,19 +244,17 @@ struct AmberIDView: View {
                     }
 
                     // Daily Digest
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 16) {
                         Text("Daily Digest")
                             .font(.headline)
                             .padding(.horizontal)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(viewModel.dailyDigests) { digest in
-                                    DailyDigestCard(digest: digest)
-                                }
+                        VStack(spacing: 16) {
+                            ForEach(viewModel.dailyDigests) { digest in
+                                DailyDigestCard(digest: digest)
                             }
-                            .padding(.horizontal)
                         }
+                        .padding(.horizontal)
                     }
 
                     // Data Sources Section (moved to bottom)
@@ -404,146 +402,381 @@ struct AmberIDView: View {
     }
 }
 
-// MARK: - Daily Digest Card
+// MARK: - Daily Digest Card (Perplexity Newsfeed Style)
 struct DailyDigestCard: View {
     let digest: DailyDigest
 
     var body: some View {
         NavigationLink(destination: DigestDetailView(digest: digest)) {
-            VStack(alignment: .leading, spacing: 0) {
-                // Top gradient section with icon
-                ZStack(alignment: .topLeading) {
-                    // Gradient background
-                    LinearGradient(
-                        colors: [digest.color, digest.color.opacity(0.7)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .frame(height: 180)
+            VStack(alignment: .leading, spacing: 12) {
+                // Header with icon and title
+                HStack(spacing: 10) {
+                    Image(systemName: digest.icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(digest.color)
+                        .frame(width: 32, height: 32)
+                        .background(digest.color.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Icon
-                        Image(systemName: digest.icon)
-                            .font(.system(size: 32))
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(.white.opacity(0.2))
-                            .clipShape(Circle())
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(digest.title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
 
-                        Spacer()
-
-                        // Score
-                        HStack(alignment: .lastTextBaseline, spacing: 4) {
-                            Text("\(digest.score)")
-                                .font(.system(size: 48, weight: .bold))
-                                .foregroundColor(.white)
-                            Text("/100")
-                                .font(.title3)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-
-                        // Trend
-                        HStack(spacing: 4) {
-                            Image(systemName: digest.trend > 0 ? "arrow.up.right" : "arrow.down.right")
-                                .font(.caption)
-                            Text("\(abs(digest.trend))%")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(.white.opacity(0.2))
-                        .clipShape(Capsule())
+                        Text(digest.subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .padding(20)
+
+                    Spacer()
+
+                    // Score badge
+                    HStack(spacing: 4) {
+                        Text("\(digest.score)")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(digest.color)
+                        Text("/100")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
 
-                // Bottom white section with text
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(digest.title)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                // Main insight text
+                Text(digest.insight)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
 
-                    Text(digest.subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                // Footer with trend and sources
+                HStack {
+                    // Trend indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: digest.trend > 0 ? "arrow.up.right" : "arrow.down.right")
+                            .font(.caption2)
+                        Text("\(abs(digest.trend))%")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(digest.trend > 0 ? .green : .red)
 
-                    Text(digest.insight)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(3)
-                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+
+                    // Sources indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: "doc.text.fill")
+                            .font(.caption2)
+                        Text("3 sources")
+                            .font(.caption2)
+                    }
+                    .foregroundColor(.secondary)
                 }
-                .padding(20)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.regularMaterial)
             }
-            .frame(width: 280, height: 420)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+            .padding(16)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(digest.color.opacity(0.2), lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
     }
 }
 
-// MARK: - Digest Detail View
+// MARK: - Digest Detail View with Chat
 struct DigestDetailView: View {
     let digest: DailyDigest
+    @StateObject private var viewModel = DigestChatViewModel()
+    @State private var messageText = ""
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Header
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
+        ZStack {
+            Color(UIColor.systemBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Header Card
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 12) {
                         Image(systemName: digest.icon)
-                            .font(.system(size: 32))
+                            .font(.system(size: 24))
                             .foregroundColor(.white)
-                            .frame(width: 64, height: 64)
+                            .frame(width: 56, height: 56)
                             .background(digest.color.gradient)
                             .clipShape(Circle())
 
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(digest.title)
+                                .font(.title3)
+                                .fontWeight(.bold)
+
+                            Text(digest.subtitle)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+
                         Spacer()
 
-                        VStack(alignment: .trailing) {
+                        VStack(alignment: .trailing, spacing: 2) {
                             Text("\(digest.score)")
-                                .font(.system(size: 48, weight: .bold))
+                                .font(.system(size: 32, weight: .bold))
                                 .foregroundColor(digest.color)
-                            Text("out of 100")
+                            Text("/100")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
 
-                    Text(digest.title)
-                        .font(.title2)
-                        .fontWeight(.bold)
-
-                    Text(digest.subtitle)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-
-                // Full insight
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Today's Insight")
-                        .font(.headline)
-
                     Text(digest.detailedInsight)
                         .font(.body)
                         .foregroundColor(.secondary)
+                        .lineSpacing(4)
                 }
-                .padding()
+                .padding(20)
                 .background(.regularMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .padding(.horizontal)
+                .padding(.top, 16)
+
+                // Chat interface
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(viewModel.messages) { message in
+                                DigestChatBubble(message: message, themeColor: digest.color)
+                                    .id(message.id)
+                            }
+
+                            if viewModel.isTyping {
+                                DigestTypingIndicator(themeColor: digest.color)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                        .padding(.bottom, 100)
+                    }
+                    .onChange(of: viewModel.messages.count) { oldValue, newValue in
+                        if let lastMessage = viewModel.messages.last {
+                            withAnimation {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            }
+                        }
+                    }
+                }
+
+                // Input bar
+                DigestChatInputBar(
+                    text: $messageText,
+                    isFocused: $isInputFocused,
+                    themeColor: digest.color,
+                    onSend: {
+                        sendMessage()
+                    }
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
             }
-            .padding(.vertical)
         }
         .navigationTitle(digest.title)
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.loadInitialMessage(for: digest)
+        }
+    }
+
+    private func sendMessage() {
+        guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+
+        let message = messageText
+        messageText = ""
+        isInputFocused = false
+
+        Task {
+            await viewModel.sendMessage(message, digest: digest)
+        }
+    }
+}
+
+// MARK: - Digest Chat Components
+struct DigestChatBubble: View {
+    let message: DigestChatMessage
+    let themeColor: Color
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            if message.isFromUser { Spacer(minLength: 60) }
+
+            if !message.isFromUser {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 16))
+                    .foregroundColor(themeColor)
+                    .frame(width: 28, height: 28)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+
+            VStack(alignment: message.isFromUser ? .trailing : .leading, spacing: 4) {
+                Text(message.content)
+                    .font(.body)
+                    .foregroundColor(message.isFromUser ? .white : .primary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        message.isFromUser
+                            ? AnyShapeStyle(themeColor.gradient)
+                            : AnyShapeStyle(.regularMaterial)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                Text(message.timestamp, style: .time)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 4)
+            }
+
+            if !message.isFromUser { Spacer(minLength: 60) }
+        }
+    }
+}
+
+struct DigestTypingIndicator: View {
+    let themeColor: Color
+    @State private var animatingDot = 0
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 16))
+                .foregroundColor(themeColor)
+                .frame(width: 28, height: 28)
+                .background(.ultraThinMaterial, in: Circle())
+
+            HStack(spacing: 4) {
+                ForEach(0..<3) { index in
+                    Circle()
+                        .fill(Color.secondary)
+                        .frame(width: 6, height: 6)
+                        .scaleEffect(animatingDot == index ? 1.2 : 0.8)
+                        .animation(.easeInOut(duration: 0.5).repeatForever(), value: animatingDot)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+            Spacer(minLength: 60)
+        }
+        .onAppear {
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                animatingDot = (animatingDot + 1) % 3
+            }
+        }
+    }
+}
+
+struct DigestChatInputBar: View {
+    @Binding var text: String
+    var isFocused: FocusState<Bool>.Binding
+    let themeColor: Color
+    let onSend: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            TextField("Ask follow-up...", text: $text, axis: .vertical)
+                .font(.body)
+                .lineLimit(1...5)
+                .focused(isFocused)
+                .submitLabel(.send)
+                .onSubmit(onSend)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+            Button(action: onSend) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 32))
+                    .foregroundColor(text.isEmpty ? .secondary : themeColor)
+            }
+            .disabled(text.isEmpty)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+    }
+}
+
+// MARK: - Digest Chat ViewModel
+@MainActor
+class DigestChatViewModel: ObservableObject {
+    @Published var messages: [DigestChatMessage] = []
+    @Published var isTyping = false
+
+    func loadInitialMessage(for digest: DailyDigest) async {
+        messages = [
+            DigestChatMessage(
+                content: "I've analyzed your \(digest.title.lowercased()) data. \(digest.detailedInsight)\n\nWhat would you like to explore further?",
+                isFromUser: false,
+                timestamp: Date()
+            )
+        ]
+    }
+
+    func sendMessage(_ text: String, digest: DailyDigest) async {
+        let userMessage = DigestChatMessage(
+            content: text,
+            isFromUser: true,
+            timestamp: Date()
+        )
+        messages.append(userMessage)
+
+        isTyping = true
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        isTyping = false
+
+        let response = generateResponse(for: text, digest: digest)
+        let aiMessage = DigestChatMessage(
+            content: response,
+            isFromUser: false,
+            timestamp: Date()
+        )
+        messages.append(aiMessage)
+    }
+
+    private func generateResponse(for query: String, digest: DailyDigest) -> String {
+        let lowercaseQuery = query.lowercased()
+
+        // Generate contextual responses based on health dimension
+        switch digest.title {
+        case "Spiritual Health":
+            if lowercaseQuery.contains("improve") || lowercaseQuery.contains("help") {
+                return "To improve your spiritual health, I recommend: 1) Morning meditation (start with 5 minutes), 2) Weekly reflection journal, 3) Deep conversations with close friends about values and meaning. Your recent 8% increase shows you're on the right path."
+            } else if lowercaseQuery.contains("meditation") {
+                return "Your meditation practice has been consistent for 3 weeks. Try expanding to guided visualizations or exploring mindfulness apps like Headspace or Calm. Consider joining a local meditation group for community support."
+            }
+        case "Emotional Health":
+            if lowercaseQuery.contains("improve") || lowercaseQuery.contains("help") {
+                return "Your emotional health is strong! To maintain it: 1) Continue regular check-ins with Sarah and Michael, 2) Keep journaling about your feelings, 3) Practice gratitude daily. You're doing great with emotional boundaries."
+            } else if lowercaseQuery.contains("sarah") || lowercaseQuery.contains("michael") {
+                return "Sarah and Michael are your primary emotional support network. You connect with them 3-4 times per week. These relationships provide strong emotional stability and mutual support. Consider planning a deeper activity together soon."
+            }
+        case "Physical Health":
+            if lowercaseQuery.contains("improve") || lowercaseQuery.contains("workout") {
+                return "To boost your physical health: 1) Schedule morning workouts (you're most consistent then), 2) Try a fitness class for variety, 3) Find a workout buddy for accountability. Your move goal is strong, but exercise frequency needs attention."
+            }
+        case "Social Health":
+            if lowercaseQuery.contains("james") {
+                return "You haven't connected with James in 3 weeks - your longest gap this year. He's typically responsive to voice calls. Consider reaching out today to maintain that connection. Your friendship history shows strong bonds that benefit from regular check-ins."
+            }
+        default:
+            break
+        }
+
+        return "That's a great question about your \(digest.title.lowercased()). Based on your recent patterns, I can provide more specific insights. What aspect would you like to explore - recent trends, specific recommendations, or comparisons with your historical data?"
     }
 }
 
@@ -557,7 +790,6 @@ struct DataSourceRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Icon
             Image(systemName: icon)
                 .font(.system(size: 20))
                 .foregroundColor(.white)
@@ -565,7 +797,6 @@ struct DataSourceRow: View {
                 .background(color.gradient)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            // Title and subtitle
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.body)
@@ -578,7 +809,6 @@ struct DataSourceRow: View {
 
             Spacer()
 
-            // Toggle
             Toggle("", isOn: $isConnected)
                 .labelsHidden()
                 .tint(.amberBlue)
@@ -615,7 +845,14 @@ struct DailyDigest: Identifiable {
     let icon: String
     let color: Color
     let score: Int
-    let trend: Int // positive for up, negative for down
+    let trend: Int
     let insight: String
     let detailedInsight: String
+}
+
+struct DigestChatMessage: Identifiable {
+    let id = UUID()
+    let content: String
+    let isFromUser: Bool
+    let timestamp: Date
 }
