@@ -15,7 +15,7 @@ struct AmberIDView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Identity Card
+                    // Identity Card with Live Tracking
                     VStack(spacing: 16) {
                         // Avatar with ring
                         ZStack {
@@ -37,14 +37,155 @@ struct AmberIDView: View {
                         Text("@sagartiwari")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+
+                        // Live Tracking Insights
+                        VStack(spacing: 12) {
+                            Text("Today's Activity")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            // Activity Rings as Lines
+                            HStack(spacing: 16) {
+                                ActivityLineIndicator(
+                                    label: "Move",
+                                    value: viewModel.moveProgress,
+                                    color: .red
+                                )
+                                ActivityLineIndicator(
+                                    label: "Exercise",
+                                    value: viewModel.exerciseProgress,
+                                    color: .green
+                                )
+                                ActivityLineIndicator(
+                                    label: "Stand",
+                                    value: viewModel.standProgress,
+                                    color: .blue
+                                )
+                            }
+
+                            Divider()
+                                .padding(.vertical, 4)
+
+                            // Sleep Line
+                            HStack(spacing: 12) {
+                                Image(systemName: "moon.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.indigo)
+                                    .frame(width: 24)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text("Sleep")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                        Spacer()
+                                        Text("\(viewModel.sleepHours, specifier: "%.1f")h")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    GeometryReader { geometry in
+                                        ZStack(alignment: .leading) {
+                                            // Background
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(Color.secondary.opacity(0.2))
+                                                .frame(height: 4)
+
+                                            // Progress
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(Color.indigo.gradient)
+                                                .frame(width: geometry.size.width * CGFloat(min(viewModel.sleepHours / 8.0, 1.0)), height: 4)
+                                        }
+                                    }
+                                    .frame(height: 4)
+                                }
+                            }
+
+                            // Screen Time Line
+                            HStack(spacing: 12) {
+                                Image(systemName: "iphone")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.orange)
+                                    .frame(width: 24)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text("Screen Time")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                        Spacer()
+                                        Text("\(viewModel.screenTimeHours, specifier: "%.1f")h")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    GeometryReader { geometry in
+                                        ZStack(alignment: .leading) {
+                                            // Background
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(Color.secondary.opacity(0.2))
+                                                .frame(height: 4)
+
+                                            // Progress (inverted color - less is better)
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(viewModel.screenTimeHours > 4 ? Color.orange.gradient : Color.green.gradient)
+                                                .frame(width: geometry.size.width * CGFloat(min(viewModel.screenTimeHours / 8.0, 1.0)), height: 4)
+                                        }
+                                    }
+                                    .frame(height: 4)
+                                }
+                            }
+                        }
+                        .padding(.top, 8)
                     }
-                    .padding()
+                    .padding(20)
                     .frame(maxWidth: .infinity)
                     .background(.regularMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding(.horizontal)
 
-                    // Data Sources Section
+                    // Personality Summary
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Personality Summary")
+                            .font(.headline)
+                            .padding(.horizontal)
+
+                        VStack(spacing: 0) {
+                            PersonalityRow(label: "Primary Nature", value: viewModel.user.primaryNature?.rawValue ?? "Unknown")
+                            Divider().padding(.leading, 16)
+                            PersonalityRow(label: "Social type", value: viewModel.user.socialType?.rawValue ?? "Unknown")
+                            Divider().padding(.leading, 16)
+                            PersonalityRow(label: "Influenced by", value: viewModel.user.influencedBy?.rawValue ?? "Unknown")
+                            Divider().padding(.leading, 16)
+                            PersonalityRow(label: "Thinking style", value: viewModel.user.thinkingStyle?.rawValue ?? "Unknown")
+                            Divider().padding(.leading, 16)
+                            PersonalityRow(label: "Interaction style", value: viewModel.user.interactionStyle?.rawValue ?? "Unknown")
+                            Divider().padding(.leading, 16)
+                            PersonalityRow(label: "Communication", value: viewModel.user.communicationStyle?.rawValue ?? "Unknown")
+                        }
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+                    }
+
+                    // Stories
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Your Stories")
+                            .font(.headline)
+                            .padding(.horizontal)
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(viewModel.stories) { story in
+                                    StoryCardView(story: story)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+
+                    // Data Sources Section (moved to bottom)
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Connected Data Sources")
                             .font(.headline)
@@ -117,41 +258,6 @@ struct AmberIDView: View {
                         }
                         .padding(.horizontal)
                     }
-
-                    // Personality Summary
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Personality Summary")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        VStack(spacing: 0) {
-                            PersonalityRow(label: "Primary Nature", value: viewModel.user.primaryNature?.rawValue ?? "Unknown")
-                            PersonalityRow(label: "Social type", value: viewModel.user.socialType?.rawValue ?? "Unknown")
-                            PersonalityRow(label: "Influenced by", value: viewModel.user.influencedBy?.rawValue ?? "Unknown")
-                            PersonalityRow(label: "Thinking style", value: viewModel.user.thinkingStyle?.rawValue ?? "Unknown")
-                            PersonalityRow(label: "Interaction style", value: viewModel.user.interactionStyle?.rawValue ?? "Unknown")
-                            PersonalityRow(label: "Communication", value: viewModel.user.communicationStyle?.rawValue ?? "Unknown")
-                        }
-                        .background(.regularMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal)
-                    }
-
-                    // Stories
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Your Stories")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(viewModel.stories) { story in
-                                    StoryCardView(story: story)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
                 }
                 .padding(.vertical)
                 .padding(.bottom, 140) // Space for tab bar
@@ -171,6 +277,56 @@ struct AmberIDView: View {
     }
 }
 
+// MARK: - Activity Line Indicator
+struct ActivityLineIndicator: View {
+    let label: String
+    let value: Double
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+
+            ZStack {
+                // Background circle
+                Circle()
+                    .stroke(color.opacity(0.2), lineWidth: 3)
+                    .frame(width: 32, height: 32)
+
+                // Progress circle
+                Circle()
+                    .trim(from: 0, to: value)
+                    .stroke(color.gradient, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 32, height: 32)
+                    .rotationEffect(.degrees(-90))
+
+                // Percentage text
+                Text("\(Int(value * 100))")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(color)
+            }
+
+            // Line visualization
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(color.opacity(0.2))
+                        .frame(height: 4)
+
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(color.gradient)
+                        .frame(width: geometry.size.width * CGFloat(value), height: 4)
+                }
+            }
+            .frame(height: 4)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Supporting Views
 struct DataSourceRow: View {
     let icon: String
     let title: String
@@ -222,6 +378,7 @@ struct PersonalityRow: View {
                 .font(.subheadline)
             Spacer()
             Text(value)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 16)
