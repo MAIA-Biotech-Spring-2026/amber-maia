@@ -249,15 +249,14 @@ struct AmberIDView: View {
                             .font(.headline)
                             .padding(.horizontal)
 
-                        TabView(selection: $selectedDigestIndex) {
-                            ForEach(Array(viewModel.dailyDigests.enumerated()), id: \.offset) { index, digest in
-                                DailyDigestCard(digest: digest)
-                                    .tag(index)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(viewModel.dailyDigests) { digest in
+                                    DailyDigestCard(digest: digest)
+                                }
                             }
+                            .padding(.horizontal)
                         }
-                        .tabViewStyle(.page(indexDisplayMode: .always))
-                        .frame(height: 180)
-                        .indexViewStyle(.page(backgroundDisplayMode: .always))
                     }
 
                     // Data Sources Section (moved to bottom)
@@ -411,62 +410,78 @@ struct DailyDigestCard: View {
 
     var body: some View {
         NavigationLink(destination: DigestDetailView(digest: digest)) {
-            VStack(alignment: .leading, spacing: 12) {
-                // Icon and Title
-                HStack(spacing: 12) {
-                    Image(systemName: digest.icon)
-                        .font(.system(size: 24))
+            VStack(alignment: .leading, spacing: 0) {
+                // Top gradient section with icon
+                ZStack(alignment: .topLeading) {
+                    // Gradient background
+                    LinearGradient(
+                        colors: [digest.color, digest.color.opacity(0.7)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .frame(height: 180)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Icon
+                        Image(systemName: digest.icon)
+                            .font(.system(size: 32))
+                            .foregroundColor(.white)
+                            .frame(width: 56, height: 56)
+                            .background(.white.opacity(0.2))
+                            .clipShape(Circle())
+
+                        Spacer()
+
+                        // Score
+                        HStack(alignment: .lastTextBaseline, spacing: 4) {
+                            Text("\(digest.score)")
+                                .font(.system(size: 48, weight: .bold))
+                                .foregroundColor(.white)
+                            Text("/100")
+                                .font(.title3)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+
+                        // Trend
+                        HStack(spacing: 4) {
+                            Image(systemName: digest.trend > 0 ? "arrow.up.right" : "arrow.down.right")
+                                .font(.caption)
+                            Text("\(abs(digest.trend))%")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
                         .foregroundColor(.white)
-                        .frame(width: 48, height: 48)
-                        .background(digest.color.gradient)
-                        .clipShape(Circle())
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(digest.title)
-                            .font(.headline)
-                            .foregroundColor(.primary)
-
-                        Text(digest.subtitle)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(0.2))
+                        .clipShape(Capsule())
                     }
-
-                    Spacer()
+                    .padding(20)
                 }
 
-                // Score
-                HStack {
-                    Text("\(digest.score)/100")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(digest.color)
+                // Bottom white section with text
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(digest.title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
 
-                    Spacer()
+                    Text(digest.subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
 
-                    // Trend indicator
-                    HStack(spacing: 4) {
-                        Image(systemName: digest.trend > 0 ? "arrow.up.right" : "arrow.down.right")
-                            .font(.caption)
-                        Text("\(abs(digest.trend))%")
-                            .font(.caption)
-                    }
-                    .foregroundColor(digest.trend > 0 ? .green : .red)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+                    Text(digest.insight)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-
-                // Brief insight
-                Text(digest.insight)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.regularMaterial)
             }
-            .padding(20)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .padding(.horizontal, 16)
+            .frame(width: 280, height: 420)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         }
         .buttonStyle(.plain)
     }
