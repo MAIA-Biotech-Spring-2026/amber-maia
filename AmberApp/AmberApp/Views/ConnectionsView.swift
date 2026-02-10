@@ -13,41 +13,26 @@ struct ConnectionsView: View {
     @State private var showAddContact = false
 
     var body: some View {
-        ZStack {
-            Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
+        NavigationView {
+            ZStack {
+                Color(UIColor.systemGroupedBackground)
+                    .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Top bar with title and add button
-                HStack {
-                    Text("Connections")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-
-                    Spacer()
-
+                ContactListView(viewModel: viewModel, searchText: $searchText)
+                    .padding(.bottom, 140) // Space for tab bar + search
+            }
+            .navigationTitle("Contacts")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showAddContact = true
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.amberBlue)
-                            .frame(width: 44, height: 44)
-                            .background(
-                                Circle()
-                                    .fill(Color.amberBlue.opacity(0.15))
-                            )
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 16)
-
-                // Contact list
-                ContactListView(viewModel: viewModel, searchText: $searchText)
-                    .padding(.bottom, 140) // Space for tab bar + search
-
-                Spacer()
             }
         }
         .task {
@@ -63,25 +48,107 @@ struct ContactRowView: View {
     let connection: Connection
 
     var body: some View {
-        HStack(spacing: 12) {
-            ContactAvatar(
-                name: connection.name,
-                imageURL: connection.avatarURL,
-                size: 40
-            )
+        NavigationLink(destination: ContactDetailView(connection: connection)) {
+            HStack(spacing: 12) {
+                ContactAvatar(
+                    name: connection.name,
+                    imageURL: connection.avatarURL,
+                    size: 40
+                )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(connection.name)
+                        .font(.body)
+                        .foregroundColor(.primary)
+
+                    if let company = connection.company {
+                        Text(company)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+            }
+        }
+    }
+}
+
+struct ContactDetailView: View {
+    let connection: Connection
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(spacing: 12) {
+                    ContactAvatar(
+                        name: connection.name,
+                        imageURL: connection.avatarURL,
+                        size: 100
+                    )
+
+                    Text(connection.name)
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    if let company = connection.company {
+                        Text(company)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 32)
+
+                // Contact Info
+                VStack(spacing: 0) {
+                    if let phone = connection.phone {
+                        ContactInfoRow(icon: "phone.fill", label: "phone", value: phone)
+                        Divider().padding(.leading, 56)
+                    }
+
+                    if let email = connection.email {
+                        ContactInfoRow(icon: "envelope.fill", label: "email", value: email)
+                        Divider().padding(.leading, 56)
+                    }
+
+                    ContactInfoRow(icon: "message.fill", label: "message", value: "Send Message")
+                }
+                .background(Color(UIColor.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .padding()
+        }
+        .background(Color(UIColor.systemGroupedBackground))
+        .navigationTitle("Contact")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct ContactInfoRow: View {
+    let icon: String
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(.amberBlue)
+                .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(connection.name)
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text(value)
                     .font(.body)
-
-                if let company = connection.company {
-                    Text(company)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
             }
 
             Spacer()
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
     }
 }

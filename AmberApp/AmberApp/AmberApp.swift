@@ -17,7 +17,7 @@ struct AmberApp: App {
 }
 
 struct ContentView: View {
-    @State private var selectedTab = 1 // Start on Connections (center)
+    @State private var selectedTab = 1 // Start on Discover (center)
     @State private var searchText = ""
 
     var body: some View {
@@ -25,9 +25,9 @@ struct ContentView: View {
             // Content views
             Group {
                 if selectedTab == 0 {
-                    DiscoverView()
-                } else if selectedTab == 1 {
                     ConnectionsView(searchText: $searchText)
+                } else if selectedTab == 1 {
+                    DiscoverView()
                 } else {
                     AmberIDView()
                 }

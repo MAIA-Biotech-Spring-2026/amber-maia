@@ -12,6 +12,8 @@ import Combine
 class DiscoverViewModel: ObservableObject {
     @Published var insights: [Insight] = []
     @Published var selectedInsight: Insight?
+    @Published var messages: [ChatMessage] = []
+    @Published var isTyping = false
 
     init() {
         loadMockData()
@@ -28,6 +30,60 @@ class DiscoverViewModel: ObservableObject {
 
     func loadInsights() async {
         // Simulate loading from Supabase
+    }
+
+    func loadMessages() async {
+        // Load initial welcome message
+        messages = [
+            ChatMessage(
+                content: "Hi! I'm Amber, your personal relationship intelligence assistant. I can help you understand your social network, strengthen connections, and gain insights about your relationships. What would you like to know?",
+                isFromUser: false,
+                timestamp: Date()
+            )
+        ]
+    }
+
+    func sendMessage(_ text: String) async {
+        // Add user message
+        let userMessage = ChatMessage(
+            content: text,
+            isFromUser: true,
+            timestamp: Date()
+        )
+        messages.append(userMessage)
+
+        // Show typing indicator
+        isTyping = true
+
+        // Simulate AI response delay
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+
+        isTyping = false
+
+        // Generate response based on user input
+        let response = generateResponse(for: text)
+        let aiMessage = ChatMessage(
+            content: response,
+            isFromUser: false,
+            timestamp: Date()
+        )
+        messages.append(aiMessage)
+    }
+
+    private func generateResponse(for query: String) -> String {
+        let lowercaseQuery = query.lowercased()
+
+        if lowercaseQuery.contains("relationship") || lowercaseQuery.contains("connection") {
+            return "Based on your data, you have 47 active connections. Your strongest relationships are with Sarah, Michael, and Emma. You've been particularly active with your professional network this month, with a 23% increase in meaningful interactions."
+        } else if lowercaseQuery.contains("health") || lowercaseQuery.contains("wellbeing") {
+            return "Your overall relationship health score is 82/100. Your emotional and social dimensions are performing well at 85 and 88 respectively. I notice you could benefit from strengthening your spiritual connections - consider scheduling deeper conversations with close friends."
+        } else if lowercaseQuery.contains("pattern") || lowercaseQuery.contains("insight") {
+            return "I've noticed an interesting pattern: you tend to reach out to people most on Tuesday and Wednesday mornings. Your response rate is highest for voice calls compared to text messages. You also have a 'core 5' group that you interact with weekly."
+        } else if lowercaseQuery.contains("improve") || lowercaseQuery.contains("help") {
+            return "Here are three personalized recommendations: 1) Reconnect with James - you haven't spoken in 3 weeks. 2) Your communication with family has decreased by 15% this month. 3) Consider joining the book club that Sarah mentioned - it aligns with your intellectual interests."
+        } else {
+            return "That's a great question! Based on your relationship data and patterns, I can provide insights about your social network, health scores, communication patterns, and personalized recommendations. What specific aspect would you like to explore?"
+        }
     }
 
     private func loadMockData() {

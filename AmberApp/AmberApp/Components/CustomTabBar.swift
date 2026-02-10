@@ -14,8 +14,8 @@ struct CustomTabBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Search bar extension - only shows when on Connections tab
-            if selectedTab == 1 {
+            // Search bar extension - only shows when on Connections tab (now tab 0)
+            if selectedTab == 0 {
                 LiquidGlassSearchBar(searchText: $searchText)
                     .padding(.horizontal, 20)
                     .padding(.bottom, 8)
@@ -24,7 +24,7 @@ struct CustomTabBar: View {
 
             // Main tab bar island
             HStack(spacing: 0) {
-                // Discover
+                // Connections (LEFT)
                 Button {
                     withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
                         selectedTab = 0
@@ -32,12 +32,12 @@ struct CustomTabBar: View {
                     }
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 0 ? "sparkles" : "sparkles")
+                        Image(systemName: "person.2.fill")
                             .font(.system(size: 22, weight: selectedTab == 0 ? .semibold : .regular))
                             .foregroundColor(selectedTab == 0 ? .amberBlue : .primary.opacity(0.6))
                             .scaleEffect(pressedTab == 0 ? 0.85 : 1.0)
 
-                        Text("Discover")
+                        Text("Connections")
                             .font(.system(size: 10, weight: selectedTab == 0 ? .semibold : .regular))
                             .foregroundColor(selectedTab == 0 ? .amberBlue : .primary.opacity(0.6))
                     }
@@ -63,7 +63,7 @@ struct CustomTabBar: View {
                         }
                 )
 
-                // Connections
+                // Discover (CENTER)
                 Button {
                     withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
                         selectedTab = 1
@@ -71,12 +71,12 @@ struct CustomTabBar: View {
                     }
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: "person.2.fill")
+                        Image(systemName: selectedTab == 1 ? "sparkles" : "sparkles")
                             .font(.system(size: 22, weight: selectedTab == 1 ? .semibold : .regular))
                             .foregroundColor(selectedTab == 1 ? .amberBlue : .primary.opacity(0.6))
                             .scaleEffect(pressedTab == 1 ? 0.85 : 1.0)
 
-                        Text("Connections")
+                        Text("Discover")
                             .font(.system(size: 10, weight: selectedTab == 1 ? .semibold : .regular))
                             .foregroundColor(selectedTab == 1 ? .amberBlue : .primary.opacity(0.6))
                     }
@@ -102,7 +102,7 @@ struct CustomTabBar: View {
                         }
                 )
 
-                // Profile
+                // Profile (RIGHT)
                 Button {
                     withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
                         selectedTab = 2

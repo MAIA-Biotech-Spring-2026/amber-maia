@@ -20,7 +20,7 @@ struct AmberIDView: View {
                         // Avatar with ring
                         ZStack {
                             Circle()
-                                .stroke(Color.accentColor, lineWidth: 3)
+                                .stroke(Color.amberBlue, lineWidth: 3)
                                 .frame(width: 106, height: 106)
 
                             ContactAvatar(
@@ -34,19 +34,8 @@ struct AmberIDView: View {
                             .font(.title2)
                             .fontWeight(.bold)
 
-                        Button {
-                            // Open web profile
-                        } label: {
-                            Label("View web profile", systemImage: "arrow.up.forward.square")
-                                .font(.subheadline)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(.thinMaterial)
-                                .clipShape(Capsule())
-                        }
-
-                        Text("dimensional.me/sagartiwari")
-                            .font(.caption)
+                        Text("@sagartiwari")
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                     .padding()
@@ -55,9 +44,83 @@ struct AmberIDView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding(.horizontal)
 
+                    // Data Sources Section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Connected Data Sources")
+                            .font(.headline)
+                            .padding(.horizontal)
+
+                        VStack(spacing: 12) {
+                            DataSourceRow(
+                                icon: "calendar",
+                                title: "Calendar",
+                                subtitle: "Google Calendar, Apple Calendar",
+                                isConnected: $viewModel.calendarConnected,
+                                color: .red
+                            )
+
+                            DataSourceRow(
+                                icon: "envelope.fill",
+                                title: "Email",
+                                subtitle: "Gmail, Outlook",
+                                isConnected: $viewModel.emailConnected,
+                                color: .blue
+                            )
+
+                            DataSourceRow(
+                                icon: "person.2.fill",
+                                title: "Contacts",
+                                subtitle: "Apple Contacts",
+                                isConnected: $viewModel.contactsConnected,
+                                color: .green
+                            )
+
+                            DataSourceRow(
+                                icon: "heart.fill",
+                                title: "Health",
+                                subtitle: "Apple HealthKit",
+                                isConnected: $viewModel.healthKitConnected,
+                                color: .pink
+                            )
+
+                            DataSourceRow(
+                                icon: "logo.linkedin",
+                                title: "LinkedIn",
+                                subtitle: "Professional network",
+                                isConnected: $viewModel.linkedInConnected,
+                                color: .blue
+                            )
+
+                            DataSourceRow(
+                                icon: "flame.fill",
+                                title: "Fitness",
+                                subtitle: "Fitbit, Strava",
+                                isConnected: $viewModel.fitnessConnected,
+                                color: .orange
+                            )
+
+                            DataSourceRow(
+                                icon: "note.text",
+                                title: "Notes",
+                                subtitle: "Notion, Evernote",
+                                isConnected: $viewModel.notesConnected,
+                                color: .indigo
+                            )
+
+                            DataSourceRow(
+                                icon: "message.fill",
+                                title: "Messaging",
+                                subtitle: "Slack, Discord",
+                                isConnected: $viewModel.messagingConnected,
+                                color: .purple
+                            )
+                        }
+                        .padding(.horizontal)
+                    }
+
                     // Personality Summary
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Summary")
+                        Text("Personality Summary")
                             .font(.headline)
                             .padding(.horizontal)
 
@@ -91,27 +154,61 @@ struct AmberIDView: View {
                     }
                 }
                 .padding(.vertical)
+                .padding(.bottom, 140) // Space for tab bar
             }
-            .navigationTitle("@sagartiwari")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         // Settings action
                     } label: {
                         Image(systemName: "gearshape")
                     }
                 }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        // Edit profile
-                    } label: {
-                        Image(systemName: "pencil")
-                    }
-                }
             }
         }
+    }
+}
+
+struct DataSourceRow: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    @Binding var isConnected: Bool
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Icon
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(.white)
+                .frame(width: 44, height: 44)
+                .background(color.gradient)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            // Title and subtitle
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.body)
+                    .fontWeight(.medium)
+
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            // Toggle
+            Toggle("", isOn: $isConnected)
+                .labelsHidden()
+                .tint(.amberBlue)
+        }
+        .padding(12)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

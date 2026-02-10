@@ -13,6 +13,16 @@ class AmberIDViewModel: ObservableObject {
     @Published var user: AmberUser = .placeholder
     @Published var stories: [AmberStory] = []
 
+    // Data source integration toggles
+    @Published var calendarConnected = false
+    @Published var emailConnected = false
+    @Published var contactsConnected = false
+    @Published var healthKitConnected = false
+    @Published var linkedInConnected = false
+    @Published var fitnessConnected = false
+    @Published var notesConnected = false
+    @Published var messagingConnected = false
+
     init() {
         loadMockData()
     }
