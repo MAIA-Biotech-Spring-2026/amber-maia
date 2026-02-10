@@ -12,16 +12,31 @@ import Combine
 class AmberIDViewModel: ObservableObject {
     @Published var user: AmberUser = .placeholder
     @Published var stories: [AmberStory] = []
+    @Published var dailyDigests: [DailyDigest] = []
 
-    // Data source integration toggles
-    @Published var calendarConnected = false
-    @Published var emailConnected = false
-    @Published var contactsConnected = false
-    @Published var healthKitConnected = false
+    // Apple integrations
+    @Published var appleContactsConnected = false
+    @Published var appleHealthConnected = false
+    @Published var locationServicesConnected = false
+    @Published var activityTrackingConnected = false
+
+    // Google integrations
+    @Published var googleCalendarConnected = false
+    @Published var gmailConnected = false
+
+    // Meta integrations
+    @Published var instagramConnected = false
+    @Published var facebookConnected = false
+
+    // Other social platforms
+    @Published var tiktokConnected = false
     @Published var linkedInConnected = false
-    @Published var fitnessConnected = false
-    @Published var notesConnected = false
-    @Published var messagingConnected = false
+    @Published var xConnected = false
+    @Published var substackConnected = false
+
+    // AI assistants
+    @Published var claudeConnected = false
+    @Published var chatGPTConnected = false
 
     // Live tracking data
     @Published var moveProgress: Double = 0.75       // 75% of move goal
@@ -32,6 +47,7 @@ class AmberIDViewModel: ObservableObject {
 
     init() {
         loadMockData()
+        loadDailyDigests()
         startLiveTracking()
     }
 
@@ -73,6 +89,71 @@ class AmberIDViewModel: ObservableObject {
                 title: "Wise Owl",
                 subtitle: "Your spirit animal",
                 color: .healthSpiritual
+            )
+        ]
+    }
+
+    private func loadDailyDigests() {
+        dailyDigests = [
+            DailyDigest(
+                title: "Spiritual Health",
+                subtitle: "Inner peace and purpose",
+                icon: "sparkles",
+                color: .healthSpiritual,
+                score: 75,
+                trend: 8,
+                insight: "Your meditation practice is showing positive results. Consider deepening your mindfulness routine.",
+                detailedInsight: "Your spiritual health has improved by 8% this week. Regular meditation and reflection practices are contributing to a stronger sense of inner peace. Your connections with close friends during deep conversations have also enriched your spiritual wellbeing. Consider exploring new spiritual practices or communities that align with your values."
+            ),
+            DailyDigest(
+                title: "Emotional Health",
+                subtitle: "Mood and feelings",
+                icon: "heart.fill",
+                color: .healthEmotional,
+                score: 82,
+                trend: 5,
+                insight: "Strong emotional connections with Sarah and Michael are boosting your mood significantly.",
+                detailedInsight: "Your emotional health is thriving. Recent interactions with close friends have provided strong emotional support. You're processing emotions effectively and maintaining healthy boundaries. Your journaling habit has helped you identify and work through challenging feelings. Keep nurturing these meaningful relationships and continue with your emotional wellness practices."
+            ),
+            DailyDigest(
+                title: "Physical Health",
+                subtitle: "Activity and fitness",
+                icon: "figure.run",
+                color: .healthPhysical,
+                score: 68,
+                trend: -3,
+                insight: "Exercise frequency has decreased this week. Try scheduling morning workouts to build consistency.",
+                detailedInsight: "Your physical health needs attention. While your sleep quality is good, exercise frequency has dropped by 3% this week. Your move goal completion is at 75%, but you're missing opportunities for more intense workouts. Consider joining a fitness class or finding a workout buddy to boost motivation. Small changes like taking the stairs or walking meetings can make a difference."
+            ),
+            DailyDigest(
+                title: "Financial Health",
+                subtitle: "Career and prosperity",
+                icon: "dollarsign.circle.fill",
+                color: .healthFinancial,
+                score: 72,
+                trend: 12,
+                insight: "Professional networking has opened new opportunities. Your LinkedIn engagement is at an all-time high.",
+                detailedInsight: "Your financial health is improving significantly. Recent networking efforts through LinkedIn have created new professional opportunities. The informational interview with Michael's colleague could lead to career advancement. Your professional network has grown by 15% this month, and you're being more strategic about relationship cultivation. Consider following up on pending opportunities and continue building authentic professional connections."
+            ),
+            DailyDigest(
+                title: "Intellectual Health",
+                subtitle: "Learning and growth",
+                icon: "brain.head.profile",
+                color: .healthIntellectual,
+                score: 90,
+                trend: 6,
+                insight: "Your curiosity is thriving. Deep conversations and reading habits are keeping your mind sharp.",
+                detailedInsight: "Excellent intellectual health! You're consistently engaging in stimulating conversations and challenging your perspectives. Your book club participation and podcast listening habits are expanding your knowledge base. Recent discussions about philosophy and technology have sparked new interests. The variety in your intellectual pursuits is creating a well-rounded cognitive foundation. Keep diversifying your learning sources."
+            ),
+            DailyDigest(
+                title: "Social Health",
+                subtitle: "Connections and community",
+                icon: "person.3.fill",
+                color: .healthSocial,
+                score: 85,
+                trend: 10,
+                insight: "Your social circle is thriving. Consistent communication with your core group is paying off.",
+                detailedInsight: "Outstanding social health! You've maintained a 30-day streak of meaningful interactions with your top 5 connections. Your response rate to messages has improved, and friends have noticed your increased presence. The balance between deep one-on-one conversations and group activities is optimal. However, consider reaching out to James soon - it's been 3 weeks since your last interaction. Overall, your social network is strong and supportive."
             )
         ]
     }

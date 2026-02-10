@@ -10,6 +10,7 @@ import SwiftUI
 struct AmberIDView: View {
     @StateObject private var viewModel = AmberIDViewModel()
     @State private var journalText = ""
+    @State private var selectedDigestIndex = 0
 
     var body: some View {
         NavigationStack {
@@ -144,9 +145,6 @@ struct AmberIDView: View {
                                 }
                             }
 
-                            Divider()
-                                .padding(.vertical, 4)
-
                             // Sleep Line
                             HStack(spacing: 12) {
                                 Image(systemName: "moon.fill")
@@ -245,63 +243,108 @@ struct AmberIDView: View {
                         .padding(.horizontal)
                     }
 
-                    // Stories
+                    // Daily Digest
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Your Stories")
+                        Text("Daily Digest")
                             .font(.headline)
                             .padding(.horizontal)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(viewModel.stories) { story in
-                                    StoryCardView(story: story)
-                                }
+                        TabView(selection: $selectedDigestIndex) {
+                            ForEach(Array(viewModel.dailyDigests.enumerated()), id: \.offset) { index, digest in
+                                DailyDigestCard(digest: digest)
+                                    .tag(index)
                             }
-                            .padding(.horizontal)
                         }
+                        .tabViewStyle(.page(indexDisplayMode: .always))
+                        .frame(height: 180)
+                        .indexViewStyle(.page(backgroundDisplayMode: .always))
                     }
 
                     // Data Sources Section (moved to bottom)
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Connected Data Sources")
+                        Text("Connected Apps & Permissions")
                             .font(.headline)
                             .padding(.horizontal)
 
                         VStack(spacing: 12) {
+                            // Apple Integrations
+                            DataSourceRow(
+                                icon: "apple.logo",
+                                title: "Apple Contacts",
+                                subtitle: "Access to your contacts",
+                                isConnected: $viewModel.appleContactsConnected,
+                                color: .gray
+                            )
+
+                            DataSourceRow(
+                                icon: "heart.fill",
+                                title: "Apple Health",
+                                subtitle: "Activity, sleep, and health data",
+                                isConnected: $viewModel.appleHealthConnected,
+                                color: .pink
+                            )
+
+                            DataSourceRow(
+                                icon: "location.fill",
+                                title: "Location Services",
+                                subtitle: "Background location tracking",
+                                isConnected: $viewModel.locationServicesConnected,
+                                color: .blue
+                            )
+
+                            DataSourceRow(
+                                icon: "app.connected.to.app.below.fill",
+                                title: "Activity from Other Apps",
+                                subtitle: "Cross-app activity tracking",
+                                isConnected: $viewModel.activityTrackingConnected,
+                                color: .purple
+                            )
+
+                            // Google Integrations
                             DataSourceRow(
                                 icon: "calendar",
-                                title: "Calendar",
-                                subtitle: "Google Calendar, Apple Calendar",
-                                isConnected: $viewModel.calendarConnected,
+                                title: "Google Calendar",
+                                subtitle: "Events and scheduling",
+                                isConnected: $viewModel.googleCalendarConnected,
                                 color: .red
                             )
 
                             DataSourceRow(
                                 icon: "envelope.fill",
-                                title: "Email",
-                                subtitle: "Gmail, Outlook",
-                                isConnected: $viewModel.emailConnected,
-                                color: .blue
+                                title: "Gmail",
+                                subtitle: "Email communications",
+                                isConnected: $viewModel.gmailConnected,
+                                color: .red
                             )
 
+                            // Meta Integrations
                             DataSourceRow(
-                                icon: "person.2.fill",
-                                title: "Contacts",
-                                subtitle: "Apple Contacts",
-                                isConnected: $viewModel.contactsConnected,
-                                color: .green
-                            )
-
-                            DataSourceRow(
-                                icon: "heart.fill",
-                                title: "Health",
-                                subtitle: "Apple HealthKit",
-                                isConnected: $viewModel.healthKitConnected,
+                                icon: "camera.fill",
+                                title: "Instagram",
+                                subtitle: "Posts, stories, and messages",
+                                isConnected: $viewModel.instagramConnected,
                                 color: .pink
                             )
 
                             DataSourceRow(
-                                icon: "logo.linkedin",
+                                icon: "person.3.fill",
+                                title: "Facebook",
+                                subtitle: "Social graph and activity",
+                                isConnected: $viewModel.facebookConnected,
+                                color: .blue
+                            )
+
+                            // Other Social
+                            DataSourceRow(
+                                icon: "music.note",
+                                title: "TikTok",
+                                subtitle: "Videos and interactions",
+                                isConnected: $viewModel.tiktokConnected,
+                                color: .black
+                            )
+
+                            DataSourceRow(
+                                icon: "briefcase.fill",
                                 title: "LinkedIn",
                                 subtitle: "Professional network",
                                 isConnected: $viewModel.linkedInConnected,
@@ -309,27 +352,36 @@ struct AmberIDView: View {
                             )
 
                             DataSourceRow(
-                                icon: "flame.fill",
-                                title: "Fitness",
-                                subtitle: "Fitbit, Strava",
-                                isConnected: $viewModel.fitnessConnected,
+                                icon: "bird.fill",
+                                title: "X (Twitter)",
+                                subtitle: "Tweets and social activity",
+                                isConnected: $viewModel.xConnected,
+                                color: .black
+                            )
+
+                            DataSourceRow(
+                                icon: "newspaper.fill",
+                                title: "Substack",
+                                subtitle: "Reading and subscriptions",
+                                isConnected: $viewModel.substackConnected,
+                                color: .orange
+                            )
+
+                            // AI Assistants
+                            DataSourceRow(
+                                icon: "sparkles",
+                                title: "Claude",
+                                subtitle: "AI conversations",
+                                isConnected: $viewModel.claudeConnected,
                                 color: .orange
                             )
 
                             DataSourceRow(
-                                icon: "note.text",
-                                title: "Notes",
-                                subtitle: "Notion, Evernote",
-                                isConnected: $viewModel.notesConnected,
-                                color: .indigo
-                            )
-
-                            DataSourceRow(
-                                icon: "message.fill",
-                                title: "Messaging",
-                                subtitle: "Slack, Discord",
-                                isConnected: $viewModel.messagingConnected,
-                                color: .purple
+                                icon: "bubble.left.and.bubble.right.fill",
+                                title: "ChatGPT",
+                                subtitle: "AI interactions",
+                                isConnected: $viewModel.chatGPTConnected,
+                                color: .green
                             )
                         }
                         .padding(.horizontal)
@@ -350,6 +402,133 @@ struct AmberIDView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Daily Digest Card
+struct DailyDigestCard: View {
+    let digest: DailyDigest
+
+    var body: some View {
+        NavigationLink(destination: DigestDetailView(digest: digest)) {
+            VStack(alignment: .leading, spacing: 12) {
+                // Icon and Title
+                HStack(spacing: 12) {
+                    Image(systemName: digest.icon)
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .frame(width: 48, height: 48)
+                        .background(digest.color.gradient)
+                        .clipShape(Circle())
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(digest.title)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+
+                        Text(digest.subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+                }
+
+                // Score
+                HStack {
+                    Text("\(digest.score)/100")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(digest.color)
+
+                    Spacer()
+
+                    // Trend indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: digest.trend > 0 ? "arrow.up.right" : "arrow.down.right")
+                            .font(.caption)
+                        Text("\(abs(digest.trend))%")
+                            .font(.caption)
+                    }
+                    .foregroundColor(digest.trend > 0 ? .green : .red)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                }
+
+                // Brief insight
+                Text(digest.insight)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .padding(.horizontal, 16)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Digest Detail View
+struct DigestDetailView: View {
+    let digest: DailyDigest
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // Header
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: digest.icon)
+                            .font(.system(size: 32))
+                            .foregroundColor(.white)
+                            .frame(width: 64, height: 64)
+                            .background(digest.color.gradient)
+                            .clipShape(Circle())
+
+                        Spacer()
+
+                        VStack(alignment: .trailing) {
+                            Text("\(digest.score)")
+                                .font(.system(size: 48, weight: .bold))
+                                .foregroundColor(digest.color)
+                            Text("out of 100")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    Text(digest.title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    Text(digest.subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+
+                // Full insight
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Today's Insight")
+                        .font(.headline)
+
+                    Text(digest.detailedInsight)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+            }
+            .padding(.vertical)
+        }
+        .navigationTitle(digest.title)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -413,23 +592,15 @@ struct PersonalityRow: View {
     }
 }
 
-struct StoryCardView: View {
-    let story: AmberStory
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(story.emoji)
-                .font(.largeTitle)
-            Text(story.title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-            Text(story.subtitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding()
-        .frame(width: 160, height: 120)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
+// MARK: - Models
+struct DailyDigest: Identifiable {
+    let id = UUID()
+    let title: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let score: Int
+    let trend: Int // positive for up, negative for down
+    let insight: String
+    let detailedInsight: String
 }
