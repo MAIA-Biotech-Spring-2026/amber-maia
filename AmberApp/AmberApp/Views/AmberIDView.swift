@@ -392,9 +392,10 @@ struct AmberIDView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // Settings action
+                        // Share action
                     } label: {
-                        Image(systemName: "gearshape")
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 17, weight: .semibold))
                     }
                 }
             }
