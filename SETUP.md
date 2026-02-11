@@ -106,10 +106,10 @@ Add these to `Info.plist` when implementing integrations:
 <string>Amber uses your location to show connections on the map.</string>
 
 <key>NSPhotoLibraryUsageDescription</key>
-<string>Amber needs access to add photos to journey entries.</string>
+<string>Amber needs access to your photos for your profile and shared content.</string>
 
 <key>NSCameraUsageDescription</key>
-<string>Amber uses the camera to take photos for journey entries.</string>
+<string>Amber uses the camera to capture photos for your profile.</string>
 
 <key>NSCalendarsUsageDescription</key>
 <string>Amber integrates with your calendar to suggest interactions.</string>
@@ -130,7 +130,6 @@ AmberApp/
 │   ├── Models/
 │   │   ├── AmberUser.swift
 │   │   ├── Connection.swift
-│   │   ├── JourneyEntry.swift
 │   │   ├── Insight.swift
 │   │   ├── AmberStory.swift
 │   │   ├── DailyDigest.swift
@@ -146,13 +145,11 @@ AmberApp/
 │   │   ├── ConnectionsView.swift
 │   │   ├── AddContactView.swift
 │   │   ├── DiscoverView.swift
-│   │   ├── JourneyView.swift
-│   │   ├── AddJourneyEntrySheet.swift
 │   │   └── AmberIDView.swift
 │   ├── ViewModels/
 │   │   ├── ConnectionsViewModel.swift
 │   │   ├── AmberIDViewModel.swift
-│   │   └── JourneyViewModel.swift
+│   │   └── DigestChatViewModel.swift
 │   └── Assets.xcassets/        # App icons, images
 ├── QUICK_START.md              # Contractor guide
 ├── README.md                   # Project overview
@@ -203,12 +200,6 @@ AmberApp/
 - ✅ View interactive bubble chart (Amber Network)
 - ✅ View hierarchical tree (Family Network)
 - ✅ View geographic map with pins (Find My Friends)
-
-### Journey Tab
-- ✅ Scroll vertical timeline of entries
-- ✅ Tap + button → opens 7-step entry wizard
-- ✅ Complete wizard: people → photos → activities → location → type → mood → notes
-- ✅ View entry cards with photos, emotions, people
 
 ### Profile Tab
 - ✅ View identity card with avatar
@@ -301,7 +292,7 @@ Reusable components in `Components/`:
 - **NetworkInputBar**: Context input for network tab
 - **ContactAvatar**: Circular avatar with initials fallback
 - **HealthBadge**: Colored pill badges for health dimensions
-- **CustomTabBar**: Bottom navigation with 4 tabs
+- **CustomTabBar**: Bottom navigation with 3 tabs
 
 ---
 
@@ -398,7 +389,7 @@ If you encounter persistent issues:
 
 3. Test thoroughly:
    - Run on multiple simulators
-   - Test all four tabs
+   - Test all three tabs
    - Verify no console errors
 
 4. Commit with descriptive message:
@@ -435,7 +426,6 @@ All mock data is currently in ViewModels:
 
 - **AmberUser.placeholder**: Sample user profile
 - **ConnectionsViewModel.loadMockData()**: 7 contacts
-- **JourneyViewModel.loadMockData()**: 5 journey entries
 - **AmberIDViewModel.loadMockData()**: Stories and digests
 
 To customize mock data:
@@ -459,7 +449,7 @@ To customize mock data:
 
 Follow conventional commits:
 ```
-feat: Add journey timeline view
+feat: Add daily digest chat interface
 fix: Resolve network input bar overlap
 refactor: Extract DailyTestCard component
 docs: Update SETUP.md with new instructions
@@ -531,10 +521,9 @@ Before starting development, verify:
 - [ ] iOS Deployment Target set to 17.0
 - [ ] App builds successfully (`Cmd+B`)
 - [ ] App runs on simulator (`Cmd+R`)
-- [ ] All 4 tabs are accessible
+- [ ] All 3 tabs are accessible
 - [ ] Search bar works on Contacts tab
 - [ ] Network input bar shows on Network tab
-- [ ] Journey entry wizard opens
 - [ ] Daily Check-In saves emotion tags
 - [ ] No console errors or warnings
 

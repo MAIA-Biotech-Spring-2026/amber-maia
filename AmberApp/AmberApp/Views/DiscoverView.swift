@@ -231,53 +231,29 @@ struct AmberNetworkView: View {
 // MARK: - Geography Network View
 struct GeographyNetworkView: View {
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Map view (Find My Friends style)
-            GeographicMapView()
-                .ignoresSafeArea(edges: .top)
+        ScrollView {
+            VStack(spacing: 20) {
+                // Find My Friends visualization canvas
+                FindMyFriendsCanvas()
+                    .frame(height: 500)
+                    .padding(.horizontal)
 
-            // Floating info card at bottom - positioned just above input bar
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Image(systemName: "map.fill")
-                        .foregroundColor(.blue)
-                    Text("Find My Friends")
-                        .font(.headline)
-                    Spacer()
+                // Geography connections info
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Geographic Connections")
+                        .font(.title3)
+                        .fontWeight(.bold)
 
-                    // Location stats inline
-                    HStack(spacing: 12) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "location.fill")
-                                .font(.caption)
-                                .foregroundColor(.red)
-                            Text("12")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-
-                        HStack(spacing: 4) {
-                            Image(systemName: "globe.americas.fill")
-                                .font(.caption)
-                                .foregroundColor(.blue)
-                            Text("5")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                    }
+                    Text("Your geographic network maps where your friends and connections are located, helping you plan meetups and stay connected across distances.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
-            )
-            .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16) // Lower position - just above input bar with small gap
+            .padding(.vertical)
         }
     }
 }
@@ -434,63 +410,90 @@ struct NetworkGraphCanvas: View {
     }
 }
 
-struct GeographicMapView: View {
+struct FindMyFriendsCanvas: View {
     var body: some View {
         ZStack {
-            // Map background gradient (simplified) with fade at bottom
-            VStack(spacing: 0) {
-                LinearGradient(
-                    colors: [
-                        Color.blue.opacity(0.1),
-                        Color.green.opacity(0.1)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.regularMaterial)
 
-                // Fade to background at bottom to prevent overlap with input bar
-                LinearGradient(
-                    colors: [
-                        Color.green.opacity(0.1),
-                        Color(UIColor.systemGroupedBackground)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: 200)
-            }
-
-            // Simulated map pins
             Canvas { context, size in
-                let pins: [(CGFloat, CGFloat, Color)] = [
-                    (0.3, 0.3, .red),
-                    (0.6, 0.4, .blue),
-                    (0.5, 0.6, .purple),
-                    (0.7, 0.3, .green),
-                    (0.4, 0.7, .orange)
+                let centerX = size.width / 2
+                let centerY = size.height / 2
+
+                // Draw map-like grid lines
+                let gridColor = Color.secondary.opacity(0.1)
+                for i in stride(from: 0, through: size.width, by: 40) {
+                    var path = Path()
+                    path.move(to: CGPoint(x: i, y: 0))
+                    path.addLine(to: CGPoint(x: i, y: size.height))
+                    context.stroke(path, with: .color(gridColor), lineWidth: 0.5)
+                }
+                for i in stride(from: 0, through: size.height, by: 40) {
+                    var path = Path()
+                    path.move(to: CGPoint(x: 0, y: i))
+                    path.addLine(to: CGPoint(x: size.width, y: i))
+                    context.stroke(path, with: .color(gridColor), lineWidth: 0.5)
+                }
+
+                // Draw connection lines between pins
+                let pins: [(CGFloat, CGFloat, Color, CGFloat)] = [
+                    (0.25, 0.25, .red, 14),
+                    (0.65, 0.20, .blue, 12),
+                    (0.50, 0.50, .amberBlue, 18),    // "You" — central
+                    (0.75, 0.45, .green, 10),
+                    (0.30, 0.65, .orange, 12),
+                    (0.70, 0.70, .purple, 10),
+                    (0.15, 0.45, .pink, 10),
+                    (0.55, 0.80, .cyan, 8),
+                    (0.85, 0.30, .yellow, 8),
+                    (0.40, 0.35, .mint, 10),
+                    (0.20, 0.80, .indigo, 8),
+                    (0.80, 0.60, .teal, 10)
                 ]
 
-                for (xRatio, yRatio, color) in pins {
-                    let x = size.width * xRatio
-                    let y = size.height * yRatio
+                // Draw dashed connection lines from center "You" to others
+                let youX = size.width * 0.50
+                let youY = size.height * 0.50
+                for (xR, yR, _, _) in pins {
+                    let x = size.width * xR
+                    let y = size.height * yR
+                    if x == youX && y == youY { continue }
 
-                    // Pin drop shadow
-                    let shadowCircle = Circle()
-                        .path(in: CGRect(x: x - 12, y: y - 12, width: 24, height: 24))
-                    context.fill(shadowCircle, with: .color(.black.opacity(0.2)))
+                    var linePath = Path()
+                    linePath.move(to: CGPoint(x: youX, y: youY))
+                    linePath.addLine(to: CGPoint(x: x, y: y))
+                    context.stroke(
+                        linePath,
+                        with: .color(.secondary.opacity(0.15)),
+                        style: StrokeStyle(lineWidth: 1, dash: [4, 4])
+                    )
+                }
+
+                // Draw pins
+                for (xR, yR, color, radius) in pins {
+                    let x = size.width * xR
+                    let y = size.height * yR
+
+                    // Glow
+                    let glowCircle = Circle()
+                        .path(in: CGRect(x: x - radius * 1.5, y: y - radius * 1.5, width: radius * 3, height: radius * 3))
+                    context.fill(glowCircle, with: .color(color.opacity(0.15)))
 
                     // Pin
                     let pinCircle = Circle()
-                        .path(in: CGRect(x: x - 10, y: y - 10, width: 20, height: 20))
-                    context.fill(pinCircle, with: .color(color))
+                        .path(in: CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2))
+                    context.fill(pinCircle, with: .color(color.opacity(0.8)))
                     context.stroke(pinCircle, with: .color(.white), lineWidth: 2)
                 }
             }
 
-            Text("🗺️ Geographic Map")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.top, 100)
+            VStack {
+                Spacer()
+                Text("📍 Find My Friends Visualization")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 20)
+            }
         }
     }
 }
