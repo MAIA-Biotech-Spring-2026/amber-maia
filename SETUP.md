@@ -1,193 +1,547 @@
-# ✨ Amber iOS App - Clean Setup Guide
+# Amber iOS App - Technical Setup Guide
 
-All code has been regenerated fresh! Follow these steps to create the Xcode project.
+This guide will help you set up the Amber iOS project in Xcode and get the app running on the simulator or a physical device.
 
 ---
 
-## 📂 Current Directory Structure
+## 📋 Prerequisites
+
+### Required Software
+- **macOS**: Ventura 13.0+ or Sonoma 14.0+
+- **Xcode**: Version 15.0 or later
+- **iOS Simulator**: iOS 17.0+ (included with Xcode)
+- **Git**: For cloning the repository
+
+### Recommended Tools
+- **CocoaPods** or **Swift Package Manager**: For dependency management (future)
+- **SF Symbols App**: For browsing system icons
+- **Figma**: For viewing design files (if available)
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Clone and Open (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/sagartiw/amber.git
+cd amber/AmberApp
+
+# Open the Xcode project
+open AmberApp.xcodeproj
+```
+
+Once Xcode opens:
+1. Select **iPhone 15 Pro** simulator from the device menu
+2. Press `Cmd+R` to build and run
+3. Wait for the simulator to launch (first build may take 2-3 minutes)
+
+### Option 2: Create New Project and Import Files
+
+If you encounter project file issues, you can create a fresh Xcode project:
+
+1. **Create New Project in Xcode**
+   - Open Xcode → File → New → Project
+   - Select **iOS → App**
+   - Product Name: `Amber`
+   - Organization Identifier: `com.amber`
+   - Interface: **SwiftUI**
+   - Language: **Swift**
+   - Storage: None
+   - Testing: Uncheck all
+
+2. **Delete Default Files**
+   - Delete `ContentView.swift`
+   - Delete `AmberApp.swift` (Xcode's default)
+
+3. **Add Source Files**
+   - Right-click the Amber folder → Add Files to "Amber"
+   - Navigate to `/path/to/amber/AmberApp/AmberApp/`
+   - Select all folders and files
+   - Check "Copy items if needed"
+   - Click Add
+
+4. **Configure Build Settings** (see below)
+
+---
+
+## ⚙️ Build Configuration
+
+### iOS Deployment Target
+1. Click the **Amber project** in the navigator
+2. Select the **Amber target**
+3. Go to **General** tab
+4. Set **Minimum Deployments → iOS** to `17.0`
+
+### Bundle Identifier
+- Should be: `com.amber.AmberApp` or `com.amber.Amber`
+- Located in: **General → Identity → Bundle Identifier**
+
+### Signing & Capabilities
+1. Go to **Signing & Capabilities** tab
+2. Select your **Team** (Apple Developer account)
+3. Check **Automatically manage signing**
+
+### Supported Orientations
+1. Go to **General → Deployment Info**
+2. Check only: **Portrait**
+3. Uncheck: Landscape Left, Landscape Right, Upside Down
+
+### Privacy Permissions (for future features)
+
+Add these to `Info.plist` when implementing integrations:
+
+```xml
+<key>NSContactsUsageDescription</key>
+<string>Amber needs access to your contacts to help you build your network.</string>
+
+<key>NSHealthShareUsageDescription</key>
+<string>Amber tracks your activity and sleep to provide health insights.</string>
+
+<key>NSHealthUpdateUsageDescription</key>
+<string>Amber updates your health data based on tracked activities.</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Amber uses your location to show connections on the map.</string>
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Amber needs access to add photos to journey entries.</string>
+
+<key>NSCameraUsageDescription</key>
+<string>Amber uses the camera to take photos for journey entries.</string>
+
+<key>NSCalendarsUsageDescription</key>
+<string>Amber integrates with your calendar to suggest interactions.</string>
+```
+
+---
+
+## 📂 Project Structure
 
 ```
-amber-id/
-├── Amber/                    ← All your Swift code is here!
-│   ├── AmberApp.swift
+AmberApp/
+├── AmberApp.xcodeproj          # Xcode project file
+├── AmberApp/                   # Main source code
+│   ├── AmberApp.swift          # App entry point
 │   ├── Extensions/
-│   │   ├── Color+Amber.swift
-│   │   └── Font+Amber.swift
+│   │   ├── Color+Amber.swift   # Color palette
+│   │   └── Font+Amber.swift    # Typography
 │   ├── Models/
-│   │   ├── AmberStory.swift
 │   │   ├── AmberUser.swift
 │   │   ├── Connection.swift
-│   │   ├── HealthDimension.swift
+│   │   ├── JourneyEntry.swift
 │   │   ├── Insight.swift
+│   │   ├── AmberStory.swift
+│   │   ├── DailyDigest.swift
+│   │   ├── HealthDimension.swift
 │   │   └── PersonalityTypes.swift
 │   ├── Components/
+│   │   ├── LiquidGlassSearchBar.swift
+│   │   ├── NetworkInputBar.swift
 │   │   ├── ContactAvatar.swift
 │   │   ├── HealthBadge.swift
-│   │   └── LiquidGlassSearchBar.swift
+│   │   └── CustomTabBar.swift
+│   ├── Views/
+│   │   ├── ConnectionsView.swift
+│   │   ├── AddContactView.swift
+│   │   ├── DiscoverView.swift
+│   │   ├── JourneyView.swift
+│   │   ├── AddJourneyEntrySheet.swift
+│   │   └── AmberIDView.swift
 │   ├── ViewModels/
-│   │   ├── AmberIDViewModel.swift
 │   │   ├── ConnectionsViewModel.swift
-│   │   └── DiscoverViewModel.swift
-│   └── Views/
-│       ├── AmberIDView.swift
-│       ├── ConnectionsView.swift
-│       └── DiscoverView.swift
-├── SETUP.md              ← You are here!
-└── README.md
+│   │   ├── AmberIDViewModel.swift
+│   │   └── JourneyViewModel.swift
+│   └── Assets.xcassets/        # App icons, images
+├── QUICK_START.md              # Contractor guide
+├── README.md                   # Project overview
+└── SETUP.md                    # This file
 ```
 
 ---
 
-## 🚀 Step-by-Step Xcode Setup
+## 🔧 Running the App
 
-### Step 1: Create New Xcode Project
+### Using iOS Simulator
 
-1. **Open Xcode**
-2. Click **"Create New Project"**
-3. Select **iOS → App**
-4. Click **Next**
+1. In Xcode, select a simulator from the device menu:
+   - **iPhone 15 Pro** (recommended)
+   - iPhone 15
+   - iPhone 14 Pro
+   - Any iOS 17.0+ device
 
-### Step 2: Configure Project
+2. Press `Cmd+R` or click the Play button
 
-Fill in these settings:
-- **Product Name:** `Amber`
-- **Team:** (Select your team or leave as None)
-- **Organization Identifier:** `com.amber`
-- **Bundle Identifier:** Will auto-fill as `com.amber.Amber`
-- **Interface:** ✅ **SwiftUI**
-- **Language:** ✅ **Swift**
-- **Storage:** ❌ None
-- **Include Tests:** ❌ Uncheck both
+3. Simulator will launch and install the app
 
-Click **Next**
+### Using Physical Device
 
-### Step 3: Choose Location
-
-**IMPORTANT:** Save it to:
-```
-/Users/sagartiwari/Desktop/Amber/amber-id/
-```
-
-This will create a new `Amber` folder next to your existing `Amber` folder.
-
-Click **Create**
-
-### Step 4: Delete Default Files
-
-In Xcode Project Navigator (left sidebar), **delete these 2 files**:
-
-1. Right-click `ContentView.swift` → **Delete** → **Move to Trash**
-2. Right-click `AmberApp.swift` → **Delete** → **Move to Trash**
-
-### Step 5: Add All Amber Files
-
-1. In Xcode, **right-click** on the **Amber folder** (the blue folder icon at the top)
-2. Select **"Add Files to 'Amber'..."**
-3. Navigate to: `/Users/sagartiwari/Desktop/Amber/amber-id/Amber/`
-4. Hold **⌘ Cmd** key and select **ALL these items**:
-   - ✅ `AmberApp.swift`
-   - ✅ `Extensions` folder
-   - ✅ `Models` folder
-   - ✅ `Views` folder
-   - ✅ `ViewModels` folder
-   - ✅ `Components` folder
-5. **Important settings:**
-   - ✅ **Copy items if needed** (CHECK THIS!)
-   - ✅ **Create groups**
-   - ✅ **Add to targets: Amber** (should be checked)
-6. Click **Add**
-
-### Step 6: Set iOS Deployment Target
-
-1. Click on **Amber project** (blue icon at very top of navigator)
-2. Select **Amber** target in the middle panel
-3. Go to **General** tab
-4. Find **Minimum Deployments**
-5. Set **iOS** to **17.0**
-
-### Step 7: Build & Run! 🎉
-
-1. Select **iPhone 15 Pro** simulator (or any iOS 17+ device)
-2. Press **⌘ + R** (or click the Play ▶️ button)
-3. Wait for build to complete
+1. Connect iPhone/iPad via USB
+2. Trust the computer if prompted on device
+3. Select device from Xcode's device menu
+4. Press `Cmd+R` to build and install
+5. If you see "Untrusted Developer":
+   - Go to Settings → General → VPN & Device Management
+   - Trust your developer certificate
 
 ---
 
-## ✅ What You Should See
+## 🧪 Testing Features
 
-The app will launch with:
+### Contacts Tab (Default Home)
+- ✅ Tap search bar → type to filter contacts
+- ✅ Tap voice icon → voice input (placeholder)
+- ✅ Tap + button (top right) → opens add contact form
+- ✅ Scroll through 7 mock contacts
+- ✅ Tap contact row → opens detail view
 
-1. **Center Screen (Default):** Connections View
-   - "My Card" at top
-   - Alphabetical list of 3 contacts (Alex, Michael, Sarah)
-   - Search bar at bottom
+### Network Tab
+- ✅ Tap segment control → switch between Amber/Family/Friends views
+- ✅ Tap filter icon → toggle data sources
+- ✅ Tap context bar → add network context (bottom of screen)
+- ✅ View interactive bubble chart (Amber Network)
+- ✅ View hierarchical tree (Family Network)
+- ✅ View geographic map with pins (Find My Friends)
 
-2. **Swipe Left:** Discover View
-   - Category tabs (For You, Spiritual, Emotional, etc.)
-   - 5 insight cards
+### Journey Tab
+- ✅ Scroll vertical timeline of entries
+- ✅ Tap + button → opens 7-step entry wizard
+- ✅ Complete wizard: people → photos → activities → location → type → mood → notes
+- ✅ View entry cards with photos, emotions, people
 
-3. **Swipe Right:** Amber ID View
-   - Profile card with avatar
-   - Personality summary (6 traits)
-   - Stories carousel (3 cards)
-   - Journal widget
+### Profile Tab
+- ✅ View identity card with avatar
+- ✅ Scroll to Personal Details section
+- ✅ View Daily Check-In card → tap emotion tags → adjust sliders → save
+- ✅ View Enhance Your Profile → 6 personality test cards
+- ✅ Scroll to Daily Digest cards (6 health dimensions)
+- ✅ Tap digest card → opens AI chat interface
+- ✅ View data source integration toggles
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Build Errors?
+### Build Errors
 
-**Solution 1:** Clean Build Folder
-- Press `⌘ + Shift + K`
-- Then build again `⌘ + R`
+**Error**: `No such module 'SwiftUI'`
+- **Fix**: Make sure iOS Deployment Target is set to 17.0+
 
-**Solution 2:** Check File Membership
-- Select any `.swift` file
-- Check **File Inspector** (right panel)
-- Make sure **Target Membership → Amber** is ✅ checked
+**Error**: `Cannot find 'Color' in scope`
+- **Fix**: Make sure `Color+Amber.swift` is added to the target
+- Check File Inspector → Target Membership → Amber is checked
 
-**Solution 3:** Restart Xcode
-- Quit Xcode completely (`⌘ + Q`)
-- Reopen the project
+**Error**: `Ambiguous reference to member` in components
+- **Fix**: Clean build folder (`Cmd+Shift+K`), then rebuild
 
-### White Screen?
+**Error**: Multiple definition errors
+- **Fix**: Make sure you didn't add files twice
+- Check each file only appears once in the navigator
 
-Make sure you:
-1. Deleted the default `ContentView.swift` and `AmberApp.swift`
-2. Added ALL files from the `Amber/` folder
-3. Set iOS deployment to 17.0
+### Simulator Issues
 
-### Files Not Found?
+**White screen on launch**
+- **Fix**: Make sure `AmberApp.swift` is set as the main entry point
+- Check `@main` attribute exists on `AmberApp` struct
 
-If Xcode shows red files:
-1. Select the red file
-2. In **File Inspector**, click the folder icon
-3. Navigate to the actual file location
-4. Click **Choose**
+**Simulator won't open**
+- **Fix**: Restart Xcode, or manually open Simulator app
+- Try different simulator device
+
+**App crashes on launch**
+- **Fix**: Check console for error messages
+- Make sure all mock data is valid
+- Reset simulator: Device → Erase All Content and Settings
+
+### Performance Issues
+
+**Slow build times**
+- Enable Parallelize Build: Build Settings → Build Options → Parallelize Build
+- Close other apps to free up memory
+- Use incremental builds (don't clean unless necessary)
+
+**Laggy UI**
+- Make sure Debug build configuration is selected
+- Release builds are optimized but take longer to compile
+
+---
+
+## 🎨 Working with the Design System
+
+### Colors
+
+All colors are defined in `Color+Amber.swift`:
+
+```swift
+.amberBlue          // Primary accent color
+.healthSpiritual    // Purple for spiritual dimension
+.healthEmotional    // Red for emotional dimension
+.healthPhysical     // Green for physical dimension
+.healthIntellectual // Orange for intellectual dimension
+.healthSocial       // Blue for social dimension
+.healthFinancial    // Teal for financial dimension
+```
+
+### Typography
+
+Fonts are defined in `Font+Amber.swift`:
+
+```swift
+.amberTitle         // Large titles
+.amberHeadline      // Section headers
+.amberBody          // Body text
+.amberCaption       // Small labels
+```
+
+### Components
+
+Reusable components in `Components/`:
+- **LiquidGlassSearchBar**: Frosted glass search with blur
+- **NetworkInputBar**: Context input for network tab
+- **ContactAvatar**: Circular avatar with initials fallback
+- **HealthBadge**: Colored pill badges for health dimensions
+- **CustomTabBar**: Bottom navigation with 4 tabs
+
+---
+
+## 📦 Dependencies (Future)
+
+Currently, the app has **zero external dependencies** and uses only native iOS frameworks:
+
+- SwiftUI (UI framework)
+- Combine (reactive programming)
+- Foundation (data structures)
+- UIKit (bridging for certain features)
+
+### Planned Dependencies
+
+These will be added in future phases:
+
+```ruby
+# Swift Package Manager (SPM)
+dependencies: [
+  .package(url: "https://github.com/supabase/supabase-swift", from: "2.0.0"),
+  .package(url: "https://github.com/Alamofire/Alamofire", from: "5.8.0"),
+  .package(url: "https://github.com/onevcat/Kingfisher", from: "7.10.0")
+]
+```
+
+---
+
+## 🔐 Environment Variables (Future)
+
+When backend is integrated, create `.env` file:
+
+```bash
+# Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+
+# Claude AI
+CLAUDE_API_KEY=sk-ant-...
+
+# ChatGPT
+OPENAI_API_KEY=sk-...
+
+# Environment
+ENVIRONMENT=development
+```
+
+**Security**: Never commit `.env` to git. Add to `.gitignore`.
+
+---
+
+## 🧹 Clean Build
+
+If you encounter persistent issues:
+
+1. **Clean Build Folder**: `Cmd+Shift+K`
+2. **Delete Derived Data**:
+   ```bash
+   rm -rf ~/Library/Developer/Xcode/DerivedData
+   ```
+3. **Restart Xcode**: `Cmd+Q` then reopen
+4. **Rebuild**: `Cmd+B`
+
+---
+
+## 📱 Supported Devices
+
+### Minimum Requirements
+- iOS 17.0+
+- iPhone 8 or later (screen size optimization)
+- iPad support: Not yet optimized
+
+### Recommended Devices
+- iPhone 15 Pro / Pro Max
+- iPhone 14 Pro / Pro Max
+- iPhone 13 Pro / Pro Max
+
+### Screen Size Support
+- **Optimized**: 6.1" - 6.7" displays
+- **Compatible**: 4.7" - 6.7" displays
+- **iPad**: Not optimized, but functional
+
+---
+
+## 🚧 Development Workflow
+
+### Making Changes
+
+1. Create a feature branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. Make changes in Xcode
+
+3. Test thoroughly:
+   - Run on multiple simulators
+   - Test all four tabs
+   - Verify no console errors
+
+4. Commit with descriptive message:
+   ```bash
+   git add -A
+   git commit -m "Add feature: detailed description"
+   ```
+
+5. Push and create pull request:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+### Code Style
+
+- Use **SwiftLint** for consistent formatting (to be added)
+- Follow Apple's Swift API Design Guidelines
+- Use `// MARK: -` to organize code sections
+- Add comments for complex logic
+- Keep files under 400 lines (split if larger)
+
+### Testing
+
+Currently using manual testing. Future additions:
+- Unit tests for ViewModels
+- UI tests for critical flows
+- Snapshot tests for visual regression
+
+---
+
+## 💾 Mock Data
+
+All mock data is currently in ViewModels:
+
+- **AmberUser.placeholder**: Sample user profile
+- **ConnectionsViewModel.loadMockData()**: 7 contacts
+- **JourneyViewModel.loadMockData()**: 5 journey entries
+- **AmberIDViewModel.loadMockData()**: Stories and digests
+
+To customize mock data:
+1. Open respective ViewModel file
+2. Edit the mock data arrays
+3. Rebuild the app
+
+**Note**: Mock data will be moved to `Core/Utils/MockDataProvider.swift` in Phase 1 refactoring.
+
+---
+
+## 🔄 Git Workflow
+
+### Branches
+- `main`: Production-ready code
+- `develop`: Development branch (to be created)
+- `feature/*`: Feature branches
+- `fix/*`: Bug fix branches
+
+### Commit Messages
+
+Follow conventional commits:
+```
+feat: Add journey timeline view
+fix: Resolve network input bar overlap
+refactor: Extract DailyTestCard component
+docs: Update SETUP.md with new instructions
+```
+
+---
+
+## 📊 Performance Monitoring
+
+### Build Time Optimization
+- Use `xcodebuild` for measuring build times
+- Enable **Build Timing Summary**: Xcode → Preferences → General → Show build timing summary
+
+### Runtime Monitoring
+- Use **Instruments** for profiling
+- Monitor memory usage in Debug navigator
+- Check for retain cycles with Memory Graph Debugger
 
 ---
 
 ## 🎯 Next Steps
 
-Once the app is running:
+After setting up the project:
 
-1. **Explore the three screens** by swiping
-2. **Test the search bar** in Connections
-3. **Tap category tabs** in Discover
-4. **Type in the journal** in Amber ID
-
-Ready for Phase 2? Check `README.md` for backend integration steps!
+1. **Read QUICK_START.md** for contractor roadmap
+2. **Review README.md** for product overview
+3. **Explore the codebase** and run the app
+4. **Review the 6-phase refactoring plan** in QUICK_START.md
+5. **Start with Phase 1** if contributing to refactoring
 
 ---
 
-## 📊 Project Stats
+## 📚 Additional Resources
 
-- **Swift Files:** 18
-- **Lines of Code:** ~1,200
-- **Mock Contacts:** 3
-- **Mock Insights:** 5
-- **Health Dimensions:** 6
-- **Personality Traits:** 6
+### Apple Documentation
+- [SwiftUI Tutorials](https://developer.apple.com/tutorials/swiftui)
+- [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+- [Swift Language Guide](https://docs.swift.org/swift-book/)
+
+### Community Resources
+- [Hacking with Swift](https://www.hackingwithswift.com)
+- [Swift by Sundell](https://www.swiftbysundell.com)
+- [Ray Wenderlich Tutorials](https://www.raywenderlich.com)
+
+---
+
+## 🤝 Getting Help
+
+If you encounter issues:
+
+1. **Check this guide** first
+2. **Search Xcode console** for error messages
+3. **Clean and rebuild** as described above
+4. **Ask the team** in Slack or email
+5. **Create an issue** on GitHub with:
+   - Xcode version
+   - macOS version
+   - Error messages
+   - Steps to reproduce
+
+---
+
+## ✅ Setup Checklist
+
+Before starting development, verify:
+
+- [ ] Xcode 15.0+ installed
+- [ ] Project opens without errors
+- [ ] iOS Deployment Target set to 17.0
+- [ ] App builds successfully (`Cmd+B`)
+- [ ] App runs on simulator (`Cmd+R`)
+- [ ] All 4 tabs are accessible
+- [ ] Search bar works on Contacts tab
+- [ ] Network input bar shows on Network tab
+- [ ] Journey entry wizard opens
+- [ ] Daily Check-In saves emotion tags
+- [ ] No console errors or warnings
+
+---
+
+**Last Updated**: February 11, 2026
 
 Built with SwiftUI ❤️
+
+Happy coding! 🚀

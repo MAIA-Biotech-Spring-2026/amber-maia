@@ -1,272 +1,281 @@
-# Amber - Relationship Intelligence Platform
+# Amber - Your Relationship Intelligence Platform
 
-A universal healthcare identity and relationship intelligence platform combining iOS mobile app with Privy.io authentication, Solana blockchain verification, and Togari business integration.
+> **Transform your relationships into your greatest asset through personalized insights, AI-driven guidance, and holistic health tracking.**
 
-## Overview
+---
 
-Amber consists of two main products:
+## What is Amber?
 
-1. **Amber ID (iOS App)**: Consumer-facing mobile app for personal health relationships with universal authentication
-2. **Togari**: Business platform for healthcare practitioners (separate codebase)
+Amber is a relationship intelligence platform that acts as your **central nervous system for human connections**. By integrating data from your daily interactions, health metrics, personality insights, and social networks, Amber helps you understand how relationships impact your wellbeing across six key dimensions.
 
-This repository contains the Amber ID iOS application.
+Think of Amber as the intersection of:
+- 🧠 **Dimensional**: Deep personality science and self-awareness
+- 🔍 **Perplexity**: Intelligent, contextual insights powered by AI
+- 📱 **Apple Contacts**: Simple, beautiful utility for managing relationships
 
-## Architecture
+---
+
+## The Six Dimensions of Health
+
+Amber tracks your wellbeing across six interconnected dimensions:
+
+| Dimension | Focus | Example Insights |
+|-----------|-------|------------------|
+| 🔮 **Spiritual** | Inner peace, purpose, values | Your meditation practice is showing positive results |
+| ❤️ **Emotional** | Mood, feelings, mental health | Strong emotional connections with Sarah boosting your mood |
+| 🏃 **Physical** | Activity, fitness, sleep | Exercise frequency decreased - schedule morning workouts |
+| 🧠 **Intellectual** | Learning, growth, curiosity | Deep conversations keeping your mind sharp |
+| 👥 **Social** | Connections, community | 30-day streak with your core group - social health thriving |
+| 💰 **Financial** | Career, prosperity, networking | LinkedIn engagement opened new professional opportunities |
+
+Each dimension is scored 0-100 and tracked over time, showing how your relationships and daily habits influence your overall wellbeing.
+
+---
+
+## Key Features
+
+### 📇 Smart Contact Management
+- **Unified contact list** from Apple Contacts and manual entries
+- **Rich profiles** with personality insights and relationship history
+- **Intelligent search** with voice input
+- **Lead capture** for professional networking
+
+### 🌐 Network Visualizations
+Three powerful ways to understand your relationship network:
+
+1. **Amber Network**: Interactive bubble chart showing connection strength and health dimensions
+2. **Family Network**: Hierarchical tree view of family relationships
+3. **Find My Friends**: Geographic map showing where your network is located
+
+### 📖 Journey Timeline
+- **Time-based tracking** of daily interactions and activities
+- **Rich entries** with photos, emotions, people, locations
+- **Pattern recognition** to understand relationship dynamics
+- **Memory preservation** of meaningful moments
+
+### 👤 Personal Profile (Amber ID)
+- **Identity card** with avatar and connection count
+- **Personality insights**: MBTI, Enneagram, Zodiac (sun/moon/rising)
+- **Daily Check-In**: Track emotions, energy, sleep, and cycle
+- **Health dimensions**: 6 daily digests with scores, trends, and AI chat
+- **Data sources**: Integrate Apple Health, Google Calendar, social media, and more
+
+### 🤖 AI-Powered Insights
+- **Personalized recommendations** based on your interaction patterns
+- **Relationship health scores** for each connection
+- **Perplexity-style chat** for exploring your network data
+- **Daily digests** with actionable insights
+
+### 🎯 Onboarding & Data Collection *(Coming Soon)*
+- **Multi-step wizard** to collect profile, personality, and contacts
+- **iMessage AI integration** for daily text-based prompts
+- **Seamless data aggregation** from 10+ sources
+
+---
+
+## How It Works
+
+### 1. **Build Your Network**
+Import contacts from Apple Contacts or add them manually. Amber creates rich profiles combining contact info, personality data, and interaction history.
+
+### 2. **Track Interactions**
+Log daily interactions through the Journey feature. Add photos, emotions, activities, and locations to create a comprehensive record of your relationships.
+
+### 3. **Connect Data Sources**
+Integrate with Apple Health, Google Calendar, Gmail, social media, and more. Amber aggregates data to give you a holistic view of your wellbeing.
+
+### 4. **Receive Insights**
+AI analyzes your patterns and provides personalized insights across the six health dimensions. Understand which relationships energize you and which drain you.
+
+### 5. **Take Action**
+Use insights to strengthen important relationships, set boundaries, optimize your social calendar, and improve your overall wellbeing.
+
+---
+
+## The Science Behind Amber
+
+Amber is built on research-backed frameworks:
+
+- **Six-Dimensional Wellness Model**: Holistic health encompasses spiritual, emotional, physical, intellectual, social, and financial wellbeing
+- **Personality Science**: MBTI, Enneagram, and Zodiac provide frameworks for understanding yourself and others
+- **Social Network Analysis**: Relationship strength, centrality, and clustering reveal patterns in your network
+- **Behavioral Tracking**: Daily habits and interactions create longitudinal data for pattern recognition
+
+---
+
+## Privacy & Data Security
+
+Your data belongs to you:
+- ✅ **All data stored locally** on your device or in your encrypted cloud
+- ✅ **No ads, no selling data** - your privacy is paramount
+- ✅ **Transparent integrations** - you control which data sources to connect
+- ✅ **Anonymous analytics** - aggregate data used only for product improvement
+- ✅ **Export anytime** - download your complete data in standard formats
+
+---
+
+## Technology Stack
 
 ### Frontend (iOS)
-- **Framework**: SwiftUI (iOS 16+)
-- **Auth SDK**: Privy Swift SDK v2.8.0+
-- **Blockchain**: Solana (verified identity NFTs)
-- **Storage**: Keychain (secure credentials), UserDefaults (preferences)
+- **SwiftUI**: Modern declarative UI framework
+- **Combine**: Reactive programming for data flow
+- **MVVM Architecture**: Clean separation of concerns
+- **iOS 17.0+**: Latest platform features
 
-### Backend Integration
-- **Privy.io**: Multi-provider authentication & wallet infrastructure
-- **Solana**: Blockchain for government ID-verified identities
-- **Togari API**: User organization and practitioner data sync
+### Design System
+- **Dark-first aesthetic**: Optimized for OLED displays
+- **Glass morphism**: Liquid glass effects with blur and transparency
+- **Six-color palette**: Each health dimension has a signature color
+- **Accessibility**: VoiceOver support, Dynamic Type, high contrast
 
-### Key Features
-- **Universal Authentication**: Email, phone, Google, Apple, LinkedIn, Ethereum/Solana wallets
-- **Blockchain Verification**: Government ID verification minted as Solana NFTs
-- **Data Aggregation**: Connect calendars, email, HealthKit, LinkedIn, and more
-- **Six Health Dimensions**: Spiritual, Emotional, Physical, Intellectual, Social, Financial
-- **Relationship Intelligence**: Track how connections affect your wellbeing
+### Integrations *(Planned)*
+- **Apple**: Contacts, Health, Location, Calendar
+- **Google**: Calendar, Gmail
+- **Meta**: Instagram, Facebook
+- **Social**: LinkedIn, X (Twitter), TikTok, Substack
+- **AI**: Claude, ChatGPT for personalized insights
 
 ---
 
-## Quick Start
+## Roadmap
+
+### ✅ Phase 0: MVP (Complete)
+- Four-tab navigation (Contacts, Network, Journey, Profile)
+- Rich contact profiles and list view
+- Three network visualizations
+- Journey timeline with entry wizard
+- Personal profile with Daily Check-In
+- Health dimension scoring and daily digests
+
+### 🚧 Phase 1-6: Refactoring & Expansion (In Progress)
+1. **Service Layer**: Database, API, Auth, Message services
+2. **Component Consolidation**: Reduce duplication, create reusable components
+3. **Feature Extraction**: Reorganize into feature-based architecture
+4. **Onboarding**: Multi-step wizard for data collection
+5. **iMessage AI**: Daily text prompts for emotion/interaction tracking
+6. **Root Integration**: Wire up all features with proper routing
+
+### 🔮 Future Phases
+- Backend API and cloud sync
+- Real-time collaboration features
+- Practitioner dashboard (Togari)
+- Web app and browser extension
+- Android app
+- Public API for third-party integrations
+
+---
+
+## Use Cases
+
+### Personal Wellbeing
+- Track how different people affect your mood and energy
+- Identify patterns in your social habits
+- Strengthen relationships that matter most
+- Set healthy boundaries with draining connections
+
+### Professional Networking
+- Manage career relationships strategically
+- Track networking activities and follow-ups
+- Identify connectors and influencers in your network
+- Measure professional network growth over time
+
+### Health & Wellness
+- Understand the social determinants of your health
+- Track cycle-related mood and energy patterns
+- Optimize sleep and exercise routines
+- Monitor stress and emotional wellbeing
+
+### Family & Friends
+- Stay connected with loved ones across distances
+- Remember birthdays, anniversaries, and important events
+- Document family history and relationships
+- Strengthen bonds through intentional interaction
+
+---
+
+## Who Is Amber For?
+
+Amber is designed for anyone who values meaningful relationships and personal growth:
+
+- 🧘 **Wellness enthusiasts** tracking holistic health
+- 💼 **Professionals** building strategic networks
+- 👨‍👩‍👧‍👦 **Families** staying connected across generations
+- 🎓 **Students** building social capital
+- 🧠 **Psychology nerds** fascinated by personality and behavior
+- 🤝 **Community builders** managing large networks
+
+---
+
+## Getting Started
 
 ### Prerequisites
+- iPhone running iOS 17.0 or later
+- Apple ID for App Store download *(when released)*
+- Optional: Apple Contacts for import
+- Optional: Integrations (Health, Calendar, etc.)
 
-- **Xcode 15.0+**
-- **iOS 17.0+**
-- **Swift 5.9+**
-- **Privy.io Account** (for authentication credentials)
+### Installation
+1. Download Amber from the App Store *(coming soon)*
+2. Complete the onboarding wizard
+3. Import contacts or add manually
+4. Connect data sources (Health, Calendar, etc.)
+5. Start logging interactions and receive insights
 
-### Opening the Project
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/sagartiw/amber.git
-   cd amber
-   ```
-
-2. Open the Xcode project:
-   ```bash
-   cd AmberApp
-   open AmberApp.xcodeproj
-   ```
-
-3. Select an iOS simulator (iPhone 15 Pro recommended)
-
-4. Press `Cmd+R` to build and run
+### For Developers
+See **SETUP.md** for technical setup instructions and **QUICK_START.md** for the contractor roadmap.
 
 ---
 
-## Project Structure
+## Philosophy
 
-```
-AmberApp/
-├── AMBER_ID_ARCHITECTURE.md    # Comprehensive integration guide
-├── AmberApp/
-│   ├── AmberApp.swift          # Main app entry point
-│   ├── Extensions/
-│   │   ├── Color+Amber.swift   # Color design system
-│   │   └── Font+Amber.swift    # Typography system
-│   ├── Models/
-│   │   ├── AmberUser.swift     # User/Amber ID model
-│   │   ├── Connection.swift    # Contact/connection model
-│   │   ├── HealthDimension.swift
-│   │   ├── PersonalityTypes.swift
-│   │   ├── Insight.swift
-│   │   └── AmberStory.swift
-│   ├── Components/
-│   │   ├── LiquidGlassSearchBar.swift
-│   │   ├── ContactAvatar.swift
-│   │   ├── HealthBadge.swift
-│   │   └── CustomTabBar.swift
-│   ├── Views/
-│   │   ├── DiscoverView.swift      # Newsfeed/insights
-│   │   ├── ConnectionsView.swift   # Contacts/relationships
-│   │   ├── AmberIDView.swift       # Profile/identity
-│   │   └── AddContactView.swift    # Lead capture form
-│   ├── ViewModels/
-│   │   ├── DiscoverViewModel.swift
-│   │   ├── ConnectionsViewModel.swift
-│   │   └── AmberIDViewModel.swift
-│   └── Services/               # Future: Privy, Solana, API clients
-```
+**Relationships are the foundation of wellbeing.** Research shows that the quality of our relationships is the single best predictor of long-term happiness and health.
+
+Amber exists to help you:
+- **Understand** your relationship patterns
+- **Optimize** your social energy
+- **Strengthen** meaningful connections
+- **Grow** in self-awareness and empathy
+
+We believe technology should enhance human connection, not replace it. Amber provides data and insights, but the real work happens in your daily interactions with the people you care about.
 
 ---
 
-## Features Implemented
+## Support
 
-### ✅ Phase 1: Core UI (Complete)
-
-1. **Three-Tab Navigation**
-   - Discover: Newsfeed with health insights
-   - Connections: Contact list with + button for lead capture
-   - Amber ID: Personal identity profile
-
-2. **Discover View**
-   - Category tabs ("For You" + 6 health dimensions)
-   - Insight cards with health badges
-   - Mock data with sample content
-
-3. **Connections View**
-   - Contact list with avatars
-   - Search bar with voice input
-   - Add Contact button (+ icon) in top right
-   - Alphabet scrubber for quick navigation
-
-4. **Amber ID View**
-   - Identity card with avatar
-   - Personality summary table
-   - Horizontally scrollable stories
-   - Integration toggles (Apple Contacts, LinkedIn, Calendar)
-   - Journal widget
-
-5. **Design System**
-   - Dark theme (background: #0A0A0A)
-   - Glass morphism effects
-   - Health dimension colors (Spiritual, Emotional, Physical, etc.)
-   - Custom typography and reusable components
+- **Website**: [amber.app](https://amber.app) *(coming soon)*
+- **Email**: support@amber.app
+- **Twitter**: [@AmberApp](https://twitter.com/AmberApp)
+- **Instagram**: [@AmberApp](https://instagram.com/AmberApp)
 
 ---
 
-## Implementation Roadmap
+## Contributing
 
-See `AmberApp/AMBER_ID_ARCHITECTURE.md` for detailed technical architecture.
-
-### Phase 1: Core Auth (Week 1-2) - IN PROGRESS
-- [x] Core UI foundation
-- [x] Remove globe/tree views (simplified to list view)
-- [x] Add + button for lead capture
-- [ ] Integrate Privy Swift SDK
-- [ ] Build onboarding UI flow
-- [ ] Implement email/phone OTP auth
-- [ ] Store credentials in Keychain
-
-### Phase 2: Social & Wallet Auth (Week 3)
-- [ ] Google OAuth
-- [ ] Apple Sign In
-- [ ] LinkedIn OAuth
-- [ ] Solana wallet connection
-- [ ] Link multiple auth methods
-
-### Phase 3: ID Verification (Week 4)
-- [ ] Government ID upload UI
-- [ ] Privy ID verification integration
-- [ ] Solana NFT minting for verified identities
-- [ ] Verified badge display in profile
-
-### Phase 4: Data Sources (Week 5-6)
-- [ ] Calendar integration (Google, Apple EventKit)
-- [ ] Email integration (Gmail, Outlook)
-- [ ] HealthKit integration
-- [ ] LinkedIn profile sync
-- [ ] Data source management UI
-
-### Phase 5: Togari Integration (Week 7-8)
-- [ ] Backend API endpoints
-- [ ] User sync on signup
-- [ ] Organization creation flow for practitioners
-- [ ] Session token exchange
-- [ ] Dashboard deep linking
-
----
-
-## Mock Data
-
-The app currently uses mock data for development:
-
-- **Connections**: 7 sample contacts (Alex, Sarah, Michael, Emily, David, Jennifer, Robert)
-- **Insights**: 5 sample insights across health dimensions
-- **Amber ID**: Sample profile for "Sagar Tiwari"
-
----
-
-## Configuration
-
-### Bundle Identifier
-- `com.amber.app`
-
-### Deployment Target
-- iOS 17.0+
-
-### Architecture
-- MVVM with Combine
-- SwiftUI for all UI components
-- Async/await for networking
-
----
-
-## Next Steps
-
-### 1. Get Privy Credentials
-- Sign up at [privy.io](https://www.privy.io/)
-- Create new app
-- Get App ID and Client ID
-- Configure supported chains (Ethereum, Solana)
-
-### 2. Set up Development Environment
-- Add Privy SDK via Swift Package Manager
-- Configure `Info.plist` for OAuth redirects
-- Set up URL schemes for deep linking
-
-### 3. Backend Coordination
-- Define Amber ID API endpoints in Togari backend
-- Set up JWT verification
-- Create user and organization database tables
-
----
-
-## Design Philosophy
-
-**Amber = Central Nervous System for Relationships**
-
-Combining the best of:
-- **Dimensional**: Deep personality science
-- **Perplexity**: Intelligent newsfeed
-- **Apple Contacts**: Simple utility
-
-**Six-Dimensional Health Model:**
-- 🔮 Spiritual
-- ❤️ Emotional
-- 🏃 Physical
-- 🧠 Intellectual
-- 👥 Social
-- 💰 Financial
-
----
-
-## Resources
-
-- [Privy iOS SDK](https://github.com/privy-io/privy-ios)
-- [Privy Documentation](https://docs.privy.io/)
-- [Solana Web3.swift](https://github.com/portto/solana-web3.swift)
-- [Metaplex NFT Standard](https://docs.metaplex.com/)
-
----
-
-## Known Issues
-
-- Xcode project file may need regeneration for proper compilation
-- Mock data only - no persistence yet
-- No authentication implemented yet
-- Images/photos not implemented (using initials avatars)
+Amber is currently in private development. If you're interested in contributing, joining the beta, or partnering with us, please reach out at hello@amber.app.
 
 ---
 
 ## License
 
-Proprietary - Amber
-
-## Contact
-
-For questions or support, contact the Amber team.
+Proprietary - Amber Technologies Inc.
 
 ---
 
-**Last Updated**: January 20, 2026
+## Acknowledgments
 
-Built with ❤️ using SwiftUI
+Amber draws inspiration from:
+- **Dimensional**: Personality science and assessment
+- **Perplexity**: Conversational AI and intelligent search
+- **Apple Contacts**: Clean, intuitive design
+- **Gyroscope**: Personal analytics and life tracking
+- **LinkedIn**: Professional network management
+
+---
+
+**Built with ❤️ by the Amber team**
+
+*Transform your relationships. Transform your life.*
+
+---
+
+**Last Updated**: February 11, 2026
