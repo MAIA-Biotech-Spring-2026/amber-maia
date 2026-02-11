@@ -10,153 +10,104 @@ import SwiftUI
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
     @Binding var searchText: String
-    @State private var pressedTab: Int? = nil
+    @Namespace private var animation
 
     var body: some View {
         VStack(spacing: 0) {
-            // Search bar extension - only shows when on Connections tab (now tab 0)
+            // Search bar extension - only shows when on Contacts tab
             if selectedTab == 0 {
                 LiquidGlassSearchBar(searchText: $searchText)
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 8)
-                    .transition(.scale(scale: 0.95).combined(with: .opacity))
+                    .padding(.bottom, 12)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
-            // Main tab bar island
+            // iOS-style liquid glass tab bar
             HStack(spacing: 0) {
-                // Connections (LEFT)
-                Button {
-                    withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
+                // Contacts
+                TabBarButton(
+                    icon: "person.2.fill",
+                    label: "Contacts",
+                    isSelected: selectedTab == 0,
+                    namespace: animation
+                ) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedTab = 0
-                        pressedTab = nil
                     }
-                } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: "person.2.fill")
-                            .font(.system(size: 22, weight: selectedTab == 0 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 0 ? .amberBlue : .primary.opacity(0.6))
-                            .scaleEffect(pressedTab == 0 ? 0.85 : 1.0)
-
-                        Text("Connections")
-                            .font(.system(size: 10, weight: selectedTab == 0 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 0 ? .amberBlue : .primary.opacity(0.6))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(selectedTab == 0 ? Color.amberBlue.opacity(0.15) : Color.clear)
-                            .scaleEffect(pressedTab == 0 ? 0.95 : 1.0)
-                    )
                 }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            withAnimation(.easeOut(duration: 0.1)) {
-                                pressedTab = 0
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
-                                pressedTab = nil
-                            }
-                        }
-                )
 
-                // Discover (CENTER)
-                Button {
-                    withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
+                // Network
+                TabBarButton(
+                    icon: "sparkles",
+                    label: "Network",
+                    isSelected: selectedTab == 1,
+                    namespace: animation
+                ) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedTab = 1
-                        pressedTab = nil
                     }
-                } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 1 ? "sparkles" : "sparkles")
-                            .font(.system(size: 22, weight: selectedTab == 1 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 1 ? .amberBlue : .primary.opacity(0.6))
-                            .scaleEffect(pressedTab == 1 ? 0.85 : 1.0)
-
-                        Text("Discover")
-                            .font(.system(size: 10, weight: selectedTab == 1 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 1 ? .amberBlue : .primary.opacity(0.6))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(selectedTab == 1 ? Color.amberBlue.opacity(0.15) : Color.clear)
-                            .scaleEffect(pressedTab == 1 ? 0.95 : 1.0)
-                    )
                 }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            withAnimation(.easeOut(duration: 0.1)) {
-                                pressedTab = 1
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
-                                pressedTab = nil
-                            }
-                        }
-                )
 
-                // Profile (RIGHT)
-                Button {
-                    withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
+                // Profile
+                TabBarButton(
+                    icon: "person.circle.fill",
+                    label: "Profile",
+                    isSelected: selectedTab == 2,
+                    namespace: animation
+                ) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedTab = 2
-                        pressedTab = nil
                     }
-                } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 22, weight: selectedTab == 2 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 2 ? .amberBlue : .primary.opacity(0.6))
-                            .scaleEffect(pressedTab == 2 ? 0.85 : 1.0)
-
-                        Text("Profile")
-                            .font(.system(size: 10, weight: selectedTab == 2 ? .semibold : .regular))
-                            .foregroundColor(selectedTab == 2 ? .amberBlue : .primary.opacity(0.6))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(selectedTab == 2 ? Color.amberBlue.opacity(0.15) : Color.clear)
-                            .scaleEffect(pressedTab == 2 ? 0.95 : 1.0)
-                    )
                 }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            withAnimation(.easeOut(duration: 0.1)) {
-                                pressedTab = 2
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
-                                pressedTab = nil
-                            }
-                        }
-                )
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 8)
             .padding(.vertical, 8)
             .background(
                 .ultraThinMaterial,
-                in: RoundedRectangle(cornerRadius: 30)
+                in: RoundedRectangle(cornerRadius: 36, style: .continuous)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 30)
-                    .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: 36, style: .continuous)
+                    .strokeBorder(.white.opacity(0.15), lineWidth: 0.5)
             )
-            .shadow(color: .black.opacity(0.12), radius: 20, x: 0, y: 4)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
-            .scaleEffect(pressedTab != nil ? 0.98 : 1.0)
+            .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
         }
-        .animation(.interpolatingSpring(stiffness: 300, damping: 20), value: selectedTab)
-        .animation(.interpolatingSpring(stiffness: 300, damping: 20), value: pressedTab)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedTab)
+    }
+}
+
+struct TabBarButton: View {
+    let icon: String
+    let label: String
+    let isSelected: Bool
+    let namespace: Namespace.ID
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: isSelected ? .semibold : .regular))
+                    .foregroundStyle(isSelected ? Color.amberBlue : Color.primary.opacity(0.5))
+                    .frame(height: 28)
+
+                Text(label)
+                    .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
+                    .foregroundStyle(isSelected ? Color.amberBlue : Color.primary.opacity(0.5))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .fill(Color.amberBlue.opacity(0.12))
+                        .matchedGeometryEffect(id: "TAB_BACKGROUND", in: namespace)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 }

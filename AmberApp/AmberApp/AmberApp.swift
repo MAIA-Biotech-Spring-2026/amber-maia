@@ -17,8 +17,10 @@ struct AmberApp: App {
 }
 
 struct ContentView: View {
-    @State private var selectedTab = 1 // Start on Discover (center)
+    @State private var selectedTab = 1 // Start on Network (center)
     @State private var searchText = ""
+    @State private var networkInputText = ""
+    @FocusState private var isNetworkInputFocused: Bool
 
     var body: some View {
         ZStack {
@@ -34,9 +36,14 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Custom tab bar at bottom
+            // Network input bar - only shows when on Network tab
             VStack {
                 Spacer()
+                if selectedTab == 1 {
+                    NetworkInputBar(inputText: $networkInputText, isInputFocused: $isNetworkInputFocused)
+                        .padding(.bottom, 12)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
                 CustomTabBar(selectedTab: $selectedTab, searchText: $searchText)
             }
             .ignoresSafeArea(.keyboard)

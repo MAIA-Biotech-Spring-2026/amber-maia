@@ -19,7 +19,7 @@ struct ConnectionsView: View {
                     .ignoresSafeArea()
 
                 ContactListView(viewModel: viewModel, searchText: $searchText)
-                    .padding(.bottom, 140) // Space for tab bar + search
+                    .padding(.bottom, 140) // Space for tab bar
             }
             .navigationTitle("Contacts")
             .navigationBarTitleDisplayMode(.large)

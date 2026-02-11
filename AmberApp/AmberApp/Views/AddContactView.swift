@@ -6,31 +6,151 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AddContactView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
+    @State private var firstName = ""
+    @State private var lastName = ""
     @State private var company = ""
+    @State private var phoneNumber = ""
+    @State private var email = ""
     @State private var linkedinURL = ""
     @State private var notes = ""
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var profileImage: Image?
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section("Contact Information") {
-                    TextField("Name", text: $name)
-                    TextField("Company", text: $company)
-                    TextField("LinkedIn URL", text: $linkedinURL)
-                        .keyboardType(.URL)
-                        .autocapitalization(.none)
+        NavigationStack {
+            List {
+                // Photo section
+                Section {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 12) {
+                            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                                ZStack {
+                                    if let profileImage {
+                                        profileImage
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 100, height: 100)
+                                            .clipShape(Circle())
+                                    } else {
+                                        Circle()
+                                            .fill(Color(.systemGray5))
+                                            .frame(width: 100, height: 100)
+                                            .overlay {
+                                                Image(systemName: "camera.fill")
+                                                    .font(.system(size: 32))
+                                                    .foregroundColor(.secondary)
+                                            }
+                                    }
+                                }
+                            }
+
+                            Text("add photo")
+                                .font(.subheadline)
+                                .foregroundColor(.amberBlue)
+                        }
+                        Spacer()
+                    }
+                    .listRowBackground(Color.clear)
+                    .padding(.vertical, 8)
                 }
 
-                Section("Notes") {
-                    TextEditor(text: $notes)
-                        .frame(height: 100)
+                // Name section
+                Section {
+                    HStack {
+                        Text("First")
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("", text: $firstName)
+                    }
+
+                    HStack {
+                        Text("Last")
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("", text: $lastName)
+                    }
+
+                    HStack {
+                        Text("Company")
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("", text: $company)
+                    }
+                }
+
+                // Phone section
+                Section {
+                    HStack {
+                        Text("mobile")
+                            .foregroundColor(.secondary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("", text: $phoneNumber)
+                            .keyboardType(.phonePad)
+                    }
+
+                    Button {
+                        // Add phone number
+                    } label: {
+                        Text("add phone")
+                            .foregroundColor(.amberBlue)
+                    }
+                }
+
+                // Email section
+                Section {
+                    HStack {
+                        Text("email")
+                            .foregroundColor(.secondary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("", text: $email)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                    }
+
+                    Button {
+                        // Add email
+                    } label: {
+                        Text("add email")
+                            .foregroundColor(.amberBlue)
+                    }
+                }
+
+                // Social section
+                Section {
+                    HStack {
+                        Text("LinkedIn")
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .leading)
+                        TextField("URL", text: $linkedinURL)
+                            .keyboardType(.URL)
+                            .autocapitalization(.none)
+                    }
+
+                    Button {
+                        // Add social profile
+                    } label: {
+                        Text("add social profile")
+                            .foregroundColor(.amberBlue)
+                    }
+                }
+
+                // Notes section
+                Section {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Notes")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        TextEditor(text: $notes)
+                            .frame(height: 80)
+                    }
                 }
             }
-            .navigationTitle("Add Contact")
+            .navigationTitle("New Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -40,12 +160,20 @@ struct AddContactView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        // TODO: Integrate with Togari API
-                        // POST /api/v1/amber/submit
+                    Button("Done") {
+                        // TODO: Save contact
                         dismiss()
                     }
-                    .disabled(name.isEmpty)
+                    .fontWeight(.semibold)
+                    .disabled(firstName.isEmpty && lastName.isEmpty)
+                }
+            }
+        }
+        .onChange(of: selectedPhoto) { _, newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data) {
+                    profileImage = Image(uiImage: uiImage)
                 }
             }
         }

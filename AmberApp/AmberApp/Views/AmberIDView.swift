@@ -11,6 +11,7 @@ import Combine
 struct AmberIDView: View {
     @StateObject private var viewModel = AmberIDViewModel()
     @State private var journalText = ""
+    @State private var showShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -219,42 +220,152 @@ struct AmberIDView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding(.horizontal)
 
-                    // Personality Summary
+                    // Personal Details
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Personality Summary")
+                        Text("Personal Details")
                             .font(.headline)
                             .padding(.horizontal)
 
                         VStack(spacing: 0) {
-                            PersonalityRow(label: "Primary Nature", value: viewModel.user.primaryNature?.rawValue ?? "Unknown")
-                            Divider().padding(.leading, 16)
-                            PersonalityRow(label: "Social type", value: viewModel.user.socialType?.rawValue ?? "Unknown")
-                            Divider().padding(.leading, 16)
-                            PersonalityRow(label: "Influenced by", value: viewModel.user.influencedBy?.rawValue ?? "Unknown")
-                            Divider().padding(.leading, 16)
-                            PersonalityRow(label: "Thinking style", value: viewModel.user.thinkingStyle?.rawValue ?? "Unknown")
-                            Divider().padding(.leading, 16)
-                            PersonalityRow(label: "Interaction style", value: viewModel.user.interactionStyle?.rawValue ?? "Unknown")
-                            Divider().padding(.leading, 16)
-                            PersonalityRow(label: "Communication", value: viewModel.user.communicationStyle?.rawValue ?? "Unknown")
+                            if let birthday = viewModel.user.birthday {
+                                PersonalityRow(
+                                    label: "Birthday",
+                                    value: birthday.formatted(date: .abbreviated, time: .omitted)
+                                )
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let sun = viewModel.user.zodiacSun {
+                                PersonalityRow(label: "Sun Sign", value: "\(sun.symbol) \(sun.rawValue)")
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let moon = viewModel.user.zodiacMoon {
+                                PersonalityRow(label: "Moon Sign", value: "\(moon.symbol) \(moon.rawValue)")
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let rising = viewModel.user.zodiacRising {
+                                PersonalityRow(label: "Rising Sign", value: "\(rising.symbol) \(rising.rawValue)")
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let mbti = viewModel.user.myersBriggs {
+                                PersonalityRow(label: "Myers-Briggs", value: mbti.rawValue)
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let enneagram = viewModel.user.enneagram {
+                                PersonalityRow(label: "Enneagram", value: enneagram.rawValue)
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let phase = viewModel.user.currentCyclePhase {
+                                PersonalityRow(label: "Cycle Phase", value: "\(phase.emoji) \(phase.rawValue)")
+                                Divider().padding(.leading, 16)
+                            }
+
+                            if let startDate = viewModel.user.cycleStartDate {
+                                PersonalityRow(
+                                    label: "Cycle Day",
+                                    value: "Day \(Calendar.current.dateComponents([.day], from: startDate, to: Date()).day ?? 0 + 1)"
+                                )
+                            }
                         }
                         .background(.regularMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .padding(.horizontal)
                     }
 
-                    // Daily Digest
+                    // Daily Digest - Vertical Story Modals
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Daily Digest")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        VStack(spacing: 16) {
-                            ForEach(viewModel.dailyDigests) { digest in
-                                DailyDigestCard(digest: digest)
+                        HStack {
+                            Text("Daily Digest")
+                                .font(.headline)
+                            Spacer()
+                            Button {
+                                // Show all stories
+                            } label: {
+                                Text("More")
+                                    .font(.subheadline)
+                                    .foregroundColor(.amberBlue)
+                                Image(systemName: "arrow.right")
+                                    .font(.caption)
+                                    .foregroundColor(.amberBlue)
                             }
                         }
                         .padding(.horizontal)
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(viewModel.dailyDigests) { digest in
+                                    StoryCard(digest: digest)
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                    }
+
+                    // Personality Tests Grid
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Enhance Your Profile")
+                            .font(.headline)
+                            .padding(.horizontal)
+
+                        VStack(spacing: 12) {
+                            // Daily Test - Full Width Card
+                            DailyTestCard()
+                                .padding(.horizontal)
+
+                            // Other Tests Grid
+                            LazyVGrid(columns: [
+                                GridItem(.flexible(), spacing: 12),
+                                GridItem(.flexible(), spacing: 12)
+                            ], spacing: 12) {
+                                PersonalityTestCard(
+                                    title: "Big Five",
+                                    icon: "chart.bar.fill",
+                                    color: .blue,
+                                    isCompleted: false
+                                )
+
+                                PersonalityTestCard(
+                                    title: "Myers-Briggs",
+                                    icon: "person.fill",
+                                    color: .purple,
+                                    isCompleted: viewModel.user.myersBriggs != nil
+                                )
+
+                                PersonalityTestCard(
+                                    title: "Enneagram",
+                                    icon: "circle.grid.3x3.fill",
+                                    color: .green,
+                                    isCompleted: viewModel.user.enneagram != nil
+                                )
+
+                                PersonalityTestCard(
+                                    title: "Love Language",
+                                    icon: "heart.fill",
+                                    color: .pink,
+                                    isCompleted: false
+                                )
+
+                                PersonalityTestCard(
+                                    title: "Attachment Style",
+                                    icon: "link.circle.fill",
+                                    color: .orange,
+                                    isCompleted: false
+                                )
+
+                                PersonalityTestCard(
+                                    title: "Zodiac Signs",
+                                    icon: "sparkles",
+                                    color: .indigo,
+                                    isCompleted: viewModel.user.zodiacSun != nil && viewModel.user.zodiacMoon != nil && viewModel.user.zodiacRising != nil
+                                )
+                            }
+                            .padding(.horizontal)
+                        }
                     }
 
                     // Data Sources Section (moved to bottom)
@@ -392,13 +503,109 @@ struct AmberIDView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // Share action
+                        showShareSheet = true
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.amberBlue)
                     }
                 }
             }
+            .sheet(isPresented: $showShareSheet) {
+                ShareSheet(items: ["Check out my Amber profile: \(viewModel.user.name)"])
+            }
+        }
+    }
+}
+
+// MARK: - Share Sheet
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Story Card (Vertical Modal Style)
+struct StoryCard: View {
+    let digest: DailyDigest
+    @State private var showDetail = false
+
+    var body: some View {
+        Button {
+            showDetail = true
+        } label: {
+            ZStack(alignment: .bottomLeading) {
+                // Gradient background
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [digest.color.opacity(0.8), digest.color],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 200, height: 340)
+
+                // Icon overlay
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Image(systemName: digest.icon)
+                            .font(.system(size: 100, weight: .ultraLight))
+                            .foregroundColor(.white.opacity(0.15))
+                            .padding(24)
+                    }
+                }
+                .frame(width: 200, height: 340)
+
+                // Content
+                VStack(alignment: .leading, spacing: 12) {
+                    // Score badge
+                    HStack(spacing: 4) {
+                        Text("\(digest.score)")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("/100")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+
+                    Spacer()
+                        .frame(height: 140)
+
+                    // Title and subtitle
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(digest.title)
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .lineLimit(2)
+
+                        Text(digest.subtitle)
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.9))
+                            .lineLimit(2)
+                    }
+                }
+                .padding(20)
+                .frame(width: 200, height: 340, alignment: .topLeading)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .shadow(color: digest.color.opacity(0.3), radius: 20, x: 0, y: 10)
+        }
+        .buttonStyle(.plain)
+        .sheet(isPresented: $showDetail) {
+            DigestDetailView(digest: digest)
         }
     }
 }
@@ -835,6 +1042,344 @@ struct PersonalityRow: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+    }
+}
+
+// MARK: - Daily Test Card
+struct DailyTestCard: View {
+    @State private var selectedEmotions: Set<String> = []
+    @State private var cycleStarted = false
+    @State private var energyLevel = 3
+    @State private var sleepQuality = 3
+
+    let emotions = [
+        ("😊", "Happy"), ("😌", "Calm"), ("😔", "Sad"),
+        ("😰", "Anxious"), ("😤", "Angry"), ("🥰", "Loved"),
+        ("😴", "Tired"), ("✨", "Energized"), ("🤔", "Thoughtful")
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                Image(systemName: "calendar.badge.clock")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.cyan)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Daily Check-In")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+
+                    Text("How are you feeling today?")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(selectedEmotions.isEmpty ? .secondary : .green)
+            }
+
+            // Emotion Tags
+            VStack(alignment: .leading, spacing: 8) {
+                Text("I'm feeling...")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                LazyVGrid(columns: [
+                    GridItem(.flexible()),
+                    GridItem(.flexible()),
+                    GridItem(.flexible())
+                ], spacing: 8) {
+                    ForEach(emotions, id: \.1) { emoji, label in
+                        Button {
+                            if selectedEmotions.contains(label) {
+                                selectedEmotions.remove(label)
+                            } else {
+                                selectedEmotions.insert(label)
+                            }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Text(emoji)
+                                    .font(.title2)
+                                Text(label)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(
+                                selectedEmotions.contains(label)
+                                    ? Color.cyan.opacity(0.15)
+                                    : Color(UIColor.secondarySystemBackground)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .strokeBorder(
+                                        selectedEmotions.contains(label) ? Color.cyan : Color.clear,
+                                        lineWidth: 2
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            Divider()
+
+            // Quick Questions
+            VStack(spacing: 12) {
+                // Cycle Question
+                HStack {
+                    Image(systemName: "circle.circle")
+                        .font(.system(size: 16))
+                        .foregroundColor(.pink)
+
+                    Text("Did your cycle start today?")
+                        .font(.subheadline)
+
+                    Spacer()
+
+                    Toggle("", isOn: $cycleStarted)
+                        .labelsHidden()
+                        .tint(.pink)
+                }
+
+                // Energy Level
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(.orange)
+
+                        Text("Energy Level")
+                            .font(.subheadline)
+
+                        Spacer()
+
+                        Text("\(energyLevel)/5")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack(spacing: 4) {
+                        ForEach(1...5, id: \.self) { level in
+                            Circle()
+                                .fill(level <= energyLevel ? Color.orange : Color.secondary.opacity(0.2))
+                                .frame(width: 24, height: 24)
+                                .onTapGesture {
+                                    energyLevel = level
+                                }
+                        }
+                    }
+                }
+
+                // Sleep Quality
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Image(systemName: "moon.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(.indigo)
+
+                        Text("Sleep Quality")
+                            .font(.subheadline)
+
+                        Spacer()
+
+                        Text("\(sleepQuality)/5")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack(spacing: 4) {
+                        ForEach(1...5, id: \.self) { level in
+                            Circle()
+                                .fill(level <= sleepQuality ? Color.indigo : Color.secondary.opacity(0.2))
+                                .frame(width: 24, height: 24)
+                                .onTapGesture {
+                                    sleepQuality = level
+                                }
+                        }
+                    }
+                }
+            }
+
+            // Save Button
+            Button {
+                // Save daily check-in data
+            } label: {
+                Text("Complete Check-In")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.cyan.gradient)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .disabled(selectedEmotions.isEmpty)
+            .opacity(selectedEmotions.isEmpty ? 0.5 : 1.0)
+        }
+        .padding(20)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Color.cyan.opacity(0.3), lineWidth: 1.5)
+        )
+    }
+}
+
+// MARK: - Personality Test Card
+struct PersonalityTestCard: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let isCompleted: Bool
+    @State private var showTest = false
+
+    var body: some View {
+        Button {
+            showTest = true
+        } label: {
+            VStack(spacing: 12) {
+                // Icon with background
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 60, height: 60)
+
+                    Image(systemName: icon)
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundColor(color)
+                }
+
+                // Title
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+
+                // Status indicator
+                HStack(spacing: 4) {
+                    Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle.dashed")
+                        .font(.system(size: 12))
+                        .foregroundColor(isCompleted ? .green : .secondary)
+
+                    Text(isCompleted ? "Complete" : "Not taken")
+                        .font(.caption2)
+                        .foregroundColor(isCompleted ? .green : .secondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(isCompleted ? color.opacity(0.3) : Color.clear, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .sheet(isPresented: $showTest) {
+            PersonalityTestView(testTitle: title, testColor: color)
+        }
+    }
+}
+
+// MARK: - Personality Test View
+struct PersonalityTestView: View {
+    let testTitle: String
+    let testColor: Color
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(testColor.opacity(0.15))
+                                .frame(width: 80, height: 80)
+
+                            Image(systemName: iconForTest(testTitle))
+                                .font(.system(size: 36, weight: .semibold))
+                                .foregroundColor(testColor)
+                        }
+
+                        Text(testTitle)
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Text("Discover more about your personality")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 20)
+
+                    // Test content placeholder
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("About This Test")
+                            .font(.headline)
+
+                        Text("This personality assessment will help you understand your unique traits and characteristics. Take your time and answer honestly for the most accurate results.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+
+                        Button {
+                            // Start test
+                        } label: {
+                            Text("Start Test")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(testColor.gradient)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+                        .padding(.top, 8)
+                    }
+                    .padding(20)
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal)
+                }
+                .padding(.vertical)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .foregroundColor(.amberBlue)
+                }
+            }
+        }
+    }
+
+    private func iconForTest(_ title: String) -> String {
+        switch title {
+        case "Daily Test": return "calendar.badge.clock"
+        case "Big Five": return "chart.bar.fill"
+        case "Myers-Briggs": return "person.fill"
+        case "Enneagram": return "circle.grid.3x3.fill"
+        case "Love Language": return "heart.fill"
+        case "Attachment Style": return "link.circle.fill"
+        case "Zodiac Signs": return "sparkles"
+        default: return "questionmark.circle.fill"
+        }
     }
 }
 
