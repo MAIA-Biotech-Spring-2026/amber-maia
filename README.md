@@ -160,8 +160,15 @@ This project is based on the original Amber platform (Proprietary).
 
 ---
 
-**Course:** Multi-modal AI in Biotechnology (Spring 2026)  
-**Institution:** University of Southern California  
+**Course:** Multi-modal AI in Biotechnology (Spring 2026)
+**Institution:** University of Southern California
 **Organization:** [MAIA-Biotech-Spring-2026](https://github.com/MAIA-Biotech-Spring-2026)
 
-**Last Updated**: February 6, 2026
+## Upstream Sync
+
+Last synced with upstream [sagartiw/amber](https://github.com/sagartiw/amber): **February 12, 2026**
+- ✅ Pulled upstream changes into MAIA version
+- ✅ Pushed MAIA security improvements back to upstream via PR
+- ✅ Key improvements: 25+ crash fixes, security hardening, LinkedIn validation
+
+**Last Updated**: February 12, 2026
