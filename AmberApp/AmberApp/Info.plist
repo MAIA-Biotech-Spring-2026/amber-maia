@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSContactsUsageDescription</key>
+	<string>Amber needs access to your contacts to help you build your network.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Amber tracks your activity and sleep to provide health insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Amber updates your health data based on tracked activities.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Amber uses your location to show connections on the map.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Amber needs access to your photos for your profile and shared content.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Amber uses the camera to capture photos for your profile.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Amber integrates with your calendar to suggest interactions.</string>
+</dict>
+</plist>
